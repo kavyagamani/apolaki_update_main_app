@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database - Production-grade SQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: apolaki-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: apolaki_user
+      POSTGRES_PASSWORD: apolaki_pass
+      POSTGRES_DB: apolaki_db
+      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apolaki_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - apolaki-network
+
+  # Redis Cache - In-memory data store for caching & sessions
+  redis:
+    image: redis:7-alpine
+    container_name: apolaki-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - apolaki-network
+
+  # RabbitMQ Message Broker - Async task queue & messaging
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: apolaki-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: apolaki
+      RABBITMQ_DEFAULT_PASS: apolaki_pass
+      RABBITMQ_DEFAULT_VHOST: /apolaki
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - apolaki-network
+
+  # Elasticsearch (optional, for search & analytics)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: apolaki-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - apolaki-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
+networks:
+  apolaki-network:
+    driver: bridge

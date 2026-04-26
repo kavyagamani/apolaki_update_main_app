@@ -1,0 +1,49 @@
+{
+  "name": "netlify-db-service",
+  "version": "1.0.0",
+  "description": "Apolaki Solar Platform - Netlify DB Service using Neon PostgreSQL",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "echo 'Backend ready for Netlify Functions'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "solar",
+    "netlify",
+    "neon",
+    "postgresql",
+    "api"
+  ],
+  "author": "Apolaki",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@netlify/neon": "^0.1.2",
+    "axios": "^1.13.5",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-session": "^1.17.3",
+    "google-auth-library": "^9.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "oauth": "^0.10.0",
+    "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-instagram": "^1.0.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.19.0",
+    "serverless-http": "^4.0.0",
+    "uuid": "^9.0.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

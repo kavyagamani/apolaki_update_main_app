@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pinpoint Your Roof - Apolaki Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class", 
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0F6CBD", 
+                        secondary: "#F4C94C", 
+                        background: "#FDFDFD",
+                        surface: "#FDFDFD",
+                        "on-surface": "#1A1C1C",
+                        "on-surface-variant": "#414751",
+                        error: "#BA1A1A"
+                    }, 
+                    borderRadius: {
+                        DEFAULT: "0.25rem", 
+                        lg: "0.5rem", 
+                        xl: "0.75rem", 
+                        full: "9999px"
+                    }, 
+                    fontFamily: {
+                        headline: ["Plus Jakarta Sans"], 
+                        body: ["Plus Jakarta Sans"], 
+                        label: ["Plus Jakarta Sans"], 
+                        display: "Plus Jakarta Sans"
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        @font-face {
+            font-family: 'TT Fors';
+            src: url('https://fonts.cdnfonts.com/css/tt-fors') format('woff2');
+            font-weight: 700;
+        }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #fdfdfd; 
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            position: relative;
+        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .tight-display { letter-spacing: -0.04em; line-height: 1; }
+        .tt-fors-bold { font-family: 'TT Fors', sans-serif; font-weight: 700; }
+        .tap-highlight-none { -webkit-tap-highlight-color: transparent; }
+        .fill-0 { font-variation-settings: 'FILL' 0; }
+        .fill-1 { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="text-on-surface flex flex-col">
+<!-- Header (Consistent with SCREEN_178) -->
+<header class="flex justify-between items-center px-6 w-full fixed top-0 z-50 backdrop-blur-xl border-b border-slate-100 h-16 bg-white">
+<div class="flex items-center">
+<img alt="Apolaki Logo" class="w-auto object-contain h-8" src="https://lh3.googleusercontent.com/aida/ADBb0uhEyrNrC8SfZuaMPvG1lXK-7PqtGkUOtDmxFmnVIskwppx12fWcA__-Q2fKt34_Eq6xS3EBKyszv0jzSz2TwuBCnV3cpX_gr5-I169R86kt4Kbx9YoowRrmUoIBWE0tJ6B9G_I2vs1IfYgaa9_0I1l_YKUu6vq789S4X0nFzoWe9pWSn9TWJr3fLXmOm4bjH-IEu1c4CmlErxrqWYsl9qwadE4tJ9Oz2k2gh1wUDPrXZysKVxZ-H8273LTYjOLy7dvogWWoDXw83EI"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-xl hover:bg-slate-50 transition-colors text-slate-600">
+<span class="material-symbols-outlined text-[24px] fill-0" data-icon="chat">chat</span>
+</button>
+<button class="relative rounded-full transition-all p-1 hover:bg-slate-50">
+<span class="material-symbols-outlined text-[24px] text-slate-700 fill-0" data-icon="account_circle">account_circle</span>
+<span class="absolute w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full top-0.5 right-0.5"></span>
+</button>
+</div>
+</header>
+<!-- Main Map Canvas -->
+<main class="flex-1 relative w-full pt-16">
+<!-- Background Map Image (Zoomed in much further for clearly visible rooftops) -->
+<div class="absolute inset-0 z-0 overflow-hidden">
+<img alt="Close-up high-resolution satellite imagery of residential rooftops" class="w-full h-full object-cover scale-[2.8] transform transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDomEZh9uPG9IY8iu7J5aN-7QwGrxkRaflyjPkwHO5pcxTLUF4AOzRiqKh7SAloJfsnP4mQiLUhk9HLOJV3thk2lVPyKVfyzRhxgZMUP7wrX8tisQD07LhDuqnpXh_wTt7kwQgjy1C4R1QYfh4wUB1HEYf1LQGldlDeiRH4GS-pqbUzz6XK2RH7yUqaLGoi5Wq3liMkBfYGbkEl1gDM2ZKQ81zt1F5TRNGpHAJd_CUc9RYbbEDgSis6wp-WUk3ZBBearjpZNaOhQNvN"/>
+</div>
+<!-- Overlay Instruction (White bubble with blue text) -->
+<div class="absolute left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-md top-24">
+<div class="bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 text-center">
+<h1 class="text-[20px] tt-fors-bold text-primary leading-tight tight-display">Pinpoint Your Roof</h1>
+</div>
+</div>
+<!-- Interactive Pin -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
+<div class="relative">
+<div class="absolute -inset-4 bg-primary/20 rounded-full animate-ping"></div>
+<div class="bg-primary text-white p-3.5 rounded-full shadow-2xl relative z-10">
+<span class="material-symbols-outlined text-4xl fill-1" data-icon="location_on">location_on</span>
+</div>
+</div>
+<div class="mt-4 bg-primary text-white px-5 py-2 rounded-full shadow-lg text-[11px] tt-fors-bold uppercase tracking-widest whitespace-nowrap">
+                Fix Pin on Your Roof
+            </div>
+</div>
+<!-- Neighbor Trust Icons (Repositioned to feel integrated with zoomed map) -->
+<div class="absolute top-[42%] left-[25%] z-20">
+<div class="bg-white p-1.5 rounded-full shadow-md border border-slate-100 transform hover:scale-110 transition-transform">
+<div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden">
+<img alt="Lumna" class="w-3/4 h-3/4 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRZaW0PhglXPTPW3EGuV0Nn2wCedTrk9PCWLaKgvsWIOYw2WHO9YTIQ9CyhWR6drhuiZIAQbU-F2c9TXEe0jGjMxpPym4gW4vJuaoizpflZkIfyfUekFJmavmvAx2lqw3lK_QBF5iCWafa1aZoXEL53u2T7cwtVF24REGgwUJwKmJ5UCbBIi_iswuQ1-0bsXJpsQtWYxreBUEHyu4aV9X_-Xdc1bTIyXCuFIFvK70R1R7_YvUIsmDrlaDPZN13R-omk65dQs2yh42q"/>
+</div>
+</div>
+</div>
+<div class="absolute bottom-[40%] right-[30%] z-20">
+<div class="bg-white p-1.5 rounded-full shadow-md border border-slate-100 transform hover:scale-110 transition-transform">
+<div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden">
+<img alt="SolarFlow" class="w-3/4 h-3/4 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvQiwpdStweYgEimohHhG3l4OxXTqEbUBtENwt4UxdhAMQXpVDWatjWvDv2IH0zWfS0iP90VLJwq_0zpYeXM7ropGsgj4ZFrhmKxRD_zmRAlH73SmpHyjsfSxfn79I948nPIGn6inEtwQMUEq9ZpxUTaJr5BkRaYaJAIgmZU7Hkdl0SyPyLvgFbsMkbG_OVWVoN6YHi76ns_1SjpSUlP8HzrMpEgdtb6ln2McO-2V5u8_R99d0FFeXASkK_jzBdYjiL-DI36zmmfS1"/>
+</div>
+</div>
+</div>
+<div class="absolute top-[32%] right-[22%] z-20">
+<div class="bg-white p-1.5 rounded-full shadow-md border border-slate-100 transform hover:scale-110 transition-transform">
+<div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden">
+<img alt="EcoGrid" class="w-3/4 h-3/4 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhND9LRHjw982yzq07HSLO6EQ4XGFxjwE4jrDiE3fcPPaeQJMA8mfB48qK9nE6iucNCLBjpKDhrfu3f6KNxxGmPwkhxLrblcMJLde8kLJ5plk0v0hrkueVxmyW5RWh7-6BEa-mjLU5sn-ahnyNE_-BQvZCCAJTuNKWvzTR4xsbC3B_io8FGANDDlYguZoaxpGw75YjqBfVBNe6Pic2pO3JQeeCrsojIxBrS833pZN6j3Ct7GWjUjJ7LKaSTBnsYGVstZTSID_XpsjH"/>
+</div>
+</div>
+</div>
+<!-- Footer Action Button -->
+<div class="absolute bottom-28 left-0 w-full px-6 z-40">
+<button class="w-full py-4 bg-primary text-white rounded-xl font-bold text-[15px] tt-fors-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-95 active:scale-[0.98] transition-all" type="button">
+<span>Confirm Location</span>
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation (Consistent with SCREEN_178) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center pt-3 pb-8 px-4 backdrop-blur-xl rounded-t-3xl border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] bg-white">
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px] fill-0" data-icon="home">home</span>
+<span class="text-[9px] font-bold tt-fors-bold mt-1 uppercase tracking-tighter">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px] fill-1" data-icon="assignment">assignment</span>
+<span class="text-[9px] font-bold tt-fors-bold mt-1 uppercase tracking-tighter">Assessment</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px] fill-0" data-icon="payments">payments</span>
+<span class="text-[9px] font-bold tt-fors-bold mt-1 uppercase tracking-tighter">Financing</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px] fill-0" data-icon="storefront">storefront</span>
+<span class="text-[9px] font-bold tt-fors-bold mt-1 uppercase tracking-tighter">Marketplace</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px] fill-0" data-icon="more_horiz">more_horiz</span>
+<span class="text-[9px] font-bold tt-fors-bold mt-1 uppercase tracking-tighter">More</span>
+</a>
+</nav>
+</body></html>

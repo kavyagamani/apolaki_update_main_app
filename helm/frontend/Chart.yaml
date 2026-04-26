@@ -1,0 +1,22 @@
+apiVersion: v2
+name: apolaki-frontend
+description: Apolaki Solar Platform Frontend - Vue.js 3 application
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+maintainers:
+  - name: Apolaki Team
+    email: devops@apolaki-solar.com
+
+keywords:
+  - solar
+  - energy
+  - vue
+  - frontend
+
+home: https://apolaki-solar.com
+sources:
+  - https://github.com/apolaki/solar-platform
+
+dependencies: []

@@ -1,0 +1,779 @@
+/**
+ * Database client for Netlify Neon
+ * Handles all database operations using @netlify/neon with PostgreSQL fallback
+ */
+
+import { neon } from '@netlify/neon';
+import pkg from 'pg';
+const { Pool } = pkg;
+
+let sql;
+let pool;
+let initialized = false;
+
+// Lazy initialization function for database connection
+function initializeDatabase() {
+  if (initialized) return;
+  
+  const databaseUrl = process.env.NETLIFY_DATABASE_URL;
+  
+  if (!databaseUrl) {
+    throw new Error('Database URL not configured. Please set NETLIFY_DATABASE_URL environment variable.');
+  }
+
+  try {
+    // Try Netlify Neon first
+    sql = neon();
+  } catch (error) {
+    // Fallback to pg client for local development
+    console.log('Neon client failed, using pg client for local development');
+    pool = new Pool({
+      connectionString: databaseUrl,
+    });
+
+    // Create a neon-like interface with the pg pool
+    sql = async (strings, ...values) => {
+      const query = strings.join('?');
+      const result = await pool.query(query, values);
+      return result.rows;
+    };
+  }
+  
+  initialized = true;
+}
+
+// Ensure database is initialized when needed
+function ensureInitialized() {
+  if (!initialized) {
+    initializeDatabase();
+  }
+  return sql;
+}
+
+// Helper to get sql with lazy initialization
+function getSqlInstance() {
+  if (!initialized) {
+    initializeDatabase();
+  }
+  return sql;
+}
+
+export { initializeDatabase, ensureInitialized };
+
+/**
+ * User operations
+ */
+export const users = {
+  /**
+   * Create a new user
+   * @param {Object} userData - User data
+   * @returns {Promise} Created user
+   */
+  async create({ email, passwordHash, firstName, lastName, phone, profilePictureUrl, role = 'customer' }) {
+    const sqlInstance = getSqlInstance();
+    const result = await sqlInstance`
+      INSERT INTO users (email, password_hash, first_name, last_name, phone, profile_picture_url, role)
+      VALUES (${email}, ${passwordHash}, ${firstName}, ${lastName}, ${phone || null}, ${profilePictureUrl || null}, ${role})
+      RETURNING id, email, first_name, last_name, phone, profile_picture_url, role, active, created_at, updated_at
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get user by ID
+   * @param {string} id - User ID
+   * @returns {Promise} User object
+   */
+  async getById(id) {
+    const sqlInstance = getSqlInstance();
+    const result = await sqlInstance`
+      SELECT * FROM users WHERE id = ${id}
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get user by email
+   * @param {string} email - User email
+   * @returns {Promise} User object
+   */
+  async getByEmail(email) {
+    const sqlInstance = getSqlInstance();
+    const result = await sqlInstance`
+      SELECT * FROM users WHERE email = ${email}
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get all users
+   * @returns {Promise} Array of users
+   */
+  async getAll() {
+    const sqlInstance = getSqlInstance();
+    return await sqlInstance`SELECT * FROM users ORDER BY created_at DESC`;
+  },
+
+  /**
+   * Update user
+   * @param {string} id - User ID
+   * @param {Object} updates - Fields to update
+   * @returns {Promise} Updated user
+   */
+  async update(id, { firstName, lastName, role, active }) {
+    const sqlInstance = getSqlInstance();
+    const result = await sqlInstance`
+      UPDATE users 
+      SET first_name = COALESCE(${firstName}, first_name),
+          last_name = COALESCE(${lastName}, last_name),
+          role = COALESCE(${role}, role),
+          active = COALESCE(${active}, active),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Delete user
+   * @param {string} id - User ID
+   * @returns {Promise} Deletion result
+   */
+  async delete(id) {
+    const sqlInstance = getSqlInstance();
+    return await sqlInstance`DELETE FROM users WHERE id = ${id}`;
+  }
+};
+
+/**
+ * Solar Installation operations
+ */
+export const solarInstallations = {
+  /**
+   * Create a new solar installation
+   */
+  async create({
+    userId,
+    name,
+    address,
+    city,
+    state,
+    zipCode,
+    latitude,
+    longitude,
+    capacity,
+    panelCount,
+    inverterType
+  }) {
+    const result = await sql`
+      INSERT INTO solar_installations 
+      (user_id, name, address, city, state, zip_code, latitude, longitude, capacity, panel_count, inverter_type)
+      VALUES (${userId}, ${name}, ${address}, ${city}, ${state}, ${zipCode}, ${latitude}, ${longitude}, ${capacity}, ${panelCount}, ${inverterType})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get installation by ID
+   */
+  async getById(id) {
+    const result = await sql`
+      SELECT * FROM solar_installations WHERE id = ${id}
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get all installations for a user
+   */
+  async getByUserId(userId) {
+    return await sql`
+      SELECT * FROM solar_installations 
+      WHERE user_id = ${userId}
+      ORDER BY created_at DESC
+    `;
+  },
+
+  /**
+   * Update installation
+   */
+  async update(id, { name, status, capacity, panelCount }) {
+    const result = await sql`
+      UPDATE solar_installations 
+      SET name = COALESCE(${name}, name),
+          status = COALESCE(${status}, status),
+          capacity = COALESCE(${capacity}, capacity),
+          panel_count = COALESCE(${panelCount}, panel_count),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Delete installation
+   */
+  async delete(id) {
+    return await sql`DELETE FROM solar_installations WHERE id = ${id}`;
+  }
+};
+
+/**
+ * Monitoring Data operations
+ */
+export const monitoringData = {
+  /**
+   * Record monitoring data
+   */
+  async create({
+    installationId,
+    powerOutput,
+    voltageAc,
+    currentAc,
+    frequency,
+    temperature,
+    efficiency,
+    status,
+    errorCode
+  }) {
+    const result = await sql`
+      INSERT INTO monitoring_data 
+      (installation_id, power_output, voltage_ac, current_ac, frequency, temperature, efficiency, status, error_code)
+      VALUES (${installationId}, ${powerOutput}, ${voltageAc}, ${currentAc}, ${frequency}, ${temperature}, ${efficiency}, ${status}, ${errorCode})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get latest monitoring data for installation
+   */
+  async getLatest(installationId, limit = 100) {
+    return await sql`
+      SELECT * FROM monitoring_data 
+      WHERE installation_id = ${installationId}
+      ORDER BY timestamp DESC
+      LIMIT ${limit}
+    `;
+  },
+
+  /**
+   * Get monitoring data for date range
+   */
+  async getByDateRange(installationId, startDate, endDate) {
+    return await sql`
+      SELECT * FROM monitoring_data 
+      WHERE installation_id = ${installationId}
+      AND timestamp BETWEEN ${startDate} AND ${endDate}
+      ORDER BY timestamp DESC
+    `;
+  }
+};
+
+/**
+ * Performance Data operations
+ */
+export const performanceData = {
+  /**
+   * Record performance data
+   */
+  async create({
+    installationId,
+    date,
+    energyGenerated,
+    peakPower,
+    avgEfficiency,
+    downtimeMinutes
+  }) {
+    const result = await sql`
+      INSERT INTO performance_data 
+      (installation_id, date, energy_generated, peak_power, avg_efficiency, downtime_minutes)
+      VALUES (${installationId}, ${date}, ${energyGenerated}, ${peakPower}, ${avgEfficiency}, ${downtimeMinutes})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get performance data for installation
+   */
+  async getByInstallation(installationId, limit = 30) {
+    return await sql`
+      SELECT * FROM performance_data 
+      WHERE installation_id = ${installationId}
+      ORDER BY date DESC
+      LIMIT ${limit}
+    `;
+  },
+
+  /**
+   * Get performance metrics for date range
+   */
+  async getByDateRange(installationId, startDate, endDate) {
+    return await sql`
+      SELECT * FROM performance_data 
+      WHERE installation_id = ${installationId}
+      AND date BETWEEN ${startDate} AND ${endDate}
+      ORDER BY date DESC
+    `;
+  }
+};
+
+/**
+ * Maintenance Log operations
+ */
+export const maintenanceLog = {
+  /**
+   * Create maintenance record
+   */
+  async create({
+    installationId,
+    maintenanceType,
+    description,
+    performedDate,
+    cost,
+    technician,
+    notes
+  }) {
+    const result = await sql`
+      INSERT INTO maintenance_log 
+      (installation_id, maintenance_type, description, performed_date, cost, technician, notes)
+      VALUES (${installationId}, ${maintenanceType}, ${description}, ${performedDate}, ${cost}, ${technician}, ${notes})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get maintenance logs for installation
+   */
+  async getByInstallation(installationId) {
+    return await sql`
+      SELECT * FROM maintenance_log 
+      WHERE installation_id = ${installationId}
+      ORDER BY performed_date DESC
+    `;
+  },
+
+  /**
+   * Update maintenance record
+   */
+  async update(id, { status, completedDate, notes }) {
+    const result = await sql`
+      UPDATE maintenance_log 
+      SET status = COALESCE(${status}, status),
+          completed_date = COALESCE(${completedDate}, completed_date),
+          notes = COALESCE(${notes}, notes),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return result[0];
+  }
+};
+
+/**
+ * Contract operations
+ */
+export const contracts = {
+  /**
+   * Create contract
+   */
+  async create({
+    userId,
+    contractType,
+    startDate,
+    endDate,
+    termMonths,
+    amount,
+    currency = 'USD',
+    metadata
+  }) {
+    const result = await sql`
+      INSERT INTO contracts 
+      (user_id, contract_type, start_date, end_date, term_months, amount, currency, metadata)
+      VALUES (${userId}, ${contractType}, ${startDate}, ${endDate}, ${termMonths}, ${amount}, ${currency}, ${JSON.stringify(metadata)})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get contracts for user
+   */
+  async getByUserId(userId) {
+    return await sql`
+      SELECT * FROM contracts 
+      WHERE user_id = ${userId}
+      ORDER BY created_at DESC
+    `;
+  },
+
+  /**
+   * Get active contracts
+   */
+  async getActive() {
+    return await sql`
+      SELECT * FROM contracts 
+      WHERE status = 'active'
+      ORDER BY created_at DESC
+    `;
+  },
+
+  /**
+   * Update contract
+   */
+  async update(id, { status, endDate }) {
+    const result = await sql`
+      UPDATE contracts 
+      SET status = COALESCE(${status}, status),
+          end_date = COALESCE(${endDate}, end_date),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return result[0];
+  }
+};
+
+/**
+ * Assessment operations
+ */
+export const assessments = {
+  /**
+   * Create assessment
+   */
+  async create({
+    userId,
+    address,
+    city,
+    state,
+    zipCode,
+    roofCondition,
+    roofArea,
+    annualUsage,
+    sunExposure,
+    obstructionLevel,
+    recommendedCapacity,
+    estimatedCost,
+    savingsEstimate
+  }) {
+    const result = await sql`
+      INSERT INTO assessments 
+      (user_id, address, city, state, zip_code, roof_condition, roof_area, annual_usage, sun_exposure, obstruction_level, recommended_capacity, estimated_cost, savings_estimate)
+      VALUES (${userId}, ${address}, ${city}, ${state}, ${zipCode}, ${roofCondition}, ${roofArea}, ${annualUsage}, ${sunExposure}, ${obstructionLevel}, ${recommendedCapacity}, ${estimatedCost}, ${JSON.stringify(savingsEstimate)})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get assessment by ID
+   */
+  async getById(id) {
+    const result = await sql`
+      SELECT * FROM assessments WHERE id = ${id}
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get assessments for user
+   */
+  async getByUserId(userId) {
+    return await sql`
+      SELECT * FROM assessments 
+      WHERE user_id = ${userId}
+      ORDER BY created_at DESC
+    `;
+  }
+};
+
+/**
+ * Marketplace operations
+ */
+export const marketplace = {
+  /**
+   * Get all products
+   */
+  async getAll() {
+    return await sql`
+      SELECT * FROM marketplace_products 
+      WHERE active = true
+      ORDER BY created_at DESC
+    `;
+  },
+
+  /**
+   * Get product by ID
+   */
+  async getById(id) {
+    const result = await sql`
+      SELECT * FROM marketplace_products WHERE id = ${id} AND active = true
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get products by category
+   */
+  async getByCategory(category) {
+    return await sql`
+      SELECT * FROM marketplace_products 
+      WHERE category = ${category} AND active = true
+      ORDER BY created_at DESC
+    `;
+  }
+};
+
+/**
+ * Finance operations
+ */
+export const finance = {
+  /**
+   * Create transaction
+   */
+  async create({
+    userId,
+    transactionId,
+    amount,
+    currency = 'USD',
+    type,
+    category,
+    transactionDate,
+    description,
+    metadata
+  }) {
+    const result = await sql`
+      INSERT INTO finance 
+      (user_id, transaction_id, amount, currency, type, category, transaction_date, description, metadata)
+      VALUES (${userId}, ${transactionId}, ${amount}, ${currency}, ${type}, ${category}, ${transactionDate}, ${description}, ${JSON.stringify(metadata)})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get transactions for user
+   */
+  async getByUserId(userId) {
+    return await sql`
+      SELECT * FROM finance 
+      WHERE user_id = ${userId}
+      ORDER BY transaction_date DESC
+    `;
+  },
+
+  /**
+   * Get transaction summary for user
+   */
+  async getSummary(userId) {
+    const result = await sql`
+      SELECT 
+        type,
+        COUNT(*) as count,
+        SUM(amount) as total,
+        AVG(amount) as average
+      FROM finance 
+      WHERE user_id = ${userId}
+      GROUP BY type
+    `;
+    return result;
+  }
+};
+
+/**
+ * OAuth Providers operations
+ */
+export const oauthProviders = {
+  /**
+   * Create or update OAuth provider record
+   */
+  async upsert({ userId, provider, providerId, providerEmail, accessToken, refreshToken, tokenExpiresAt, rawData }) {
+    const result = await sql`
+      INSERT INTO oauth_providers (user_id, provider, provider_id, provider_email, access_token, refresh_token, token_expires_at, raw_data)
+      VALUES (${userId}, ${provider}, ${providerId}, ${providerEmail}, ${accessToken}, ${refreshToken}, ${tokenExpiresAt}, ${JSON.stringify(rawData)})
+      ON CONFLICT (provider, provider_id) 
+      DO UPDATE SET 
+        access_token = EXCLUDED.access_token,
+        refresh_token = EXCLUDED.refresh_token,
+        token_expires_at = EXCLUDED.token_expires_at,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get OAuth provider by provider and provider ID
+   */
+  async getByProvider(provider, providerId) {
+    const result = await sql`
+      SELECT * FROM oauth_providers 
+      WHERE provider = ${provider} AND provider_id = ${providerId}
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get all providers for a user
+   */
+  async getByUserId(userId) {
+    return await sql`
+      SELECT * FROM oauth_providers 
+      WHERE user_id = ${userId}
+    `;
+  },
+
+  /**
+   * Delete OAuth provider
+   */
+  async delete(userId, provider) {
+    return await sql`
+      DELETE FROM oauth_providers 
+      WHERE user_id = ${userId} AND provider = ${provider}
+    `;
+  },
+
+  /**
+   * Update access token
+   */
+  async updateAccessToken(providerId, accessToken, tokenExpiresAt) {
+    const result = await sql`
+      UPDATE oauth_providers 
+      SET access_token = ${accessToken}, token_expires_at = ${tokenExpiresAt}, updated_at = CURRENT_TIMESTAMP
+      WHERE provider_id = ${providerId}
+      RETURNING *
+    `;
+    return result[0];
+  }
+};
+
+/**
+ * Sessions operations
+ */
+export const sessions = {
+  /**
+   * Create a new session
+   */
+  async create({ userId, sessionToken, ipAddress, userAgent, expiresAt }) {
+    const result = await sql`
+      INSERT INTO sessions (user_id, session_token, ip_address, user_agent, expires_at)
+      VALUES (${userId}, ${sessionToken}, ${ipAddress}, ${userAgent}, ${expiresAt})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get session by token
+   */
+  async getByToken(sessionToken) {
+    const result = await sql`
+      SELECT * FROM sessions 
+      WHERE session_token = ${sessionToken} AND expires_at > CURRENT_TIMESTAMP
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get all sessions for user
+   */
+  async getByUserId(userId) {
+    return await sql`
+      SELECT * FROM sessions 
+      WHERE user_id = ${userId} AND expires_at > CURRENT_TIMESTAMP
+      ORDER BY created_at DESC
+    `;
+  },
+
+  /**
+   * Invalidate session
+   */
+  async invalidate(sessionToken) {
+    return await sql`
+      UPDATE sessions SET expires_at = CURRENT_TIMESTAMP 
+      WHERE session_token = ${sessionToken}
+    `;
+  },
+
+  /**
+   * Cleanup expired sessions
+   */
+  async cleanupExpired() {
+    return await sql`
+      DELETE FROM sessions WHERE expires_at <= CURRENT_TIMESTAMP
+    `;
+  }
+};
+
+/**
+ * Audit Logs operations
+ */
+export const auditLogs = {
+  /**
+   * Create audit log entry
+   */
+  async create({ userId, action, resourceType, resourceId, changes, ipAddress, userAgent, status }) {
+    const result = await sql`
+      INSERT INTO audit_logs (user_id, action, resource_type, resource_id, changes, ip_address, user_agent, status)
+      VALUES (${userId}, ${action}, ${resourceType}, ${resourceId}, ${JSON.stringify(changes)}, ${ipAddress}, ${userAgent}, ${status})
+      RETURNING *
+    `;
+    return result[0];
+  },
+
+  /**
+   * Get audit logs for user
+   */
+  async getByUserId(userId, limit = 100) {
+    return await sql`
+      SELECT * FROM audit_logs 
+      WHERE user_id = ${userId}
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    `;
+  },
+
+  /**
+   * Get audit logs for resource
+   */
+  async getByResource(resourceType, resourceId, limit = 100) {
+    return await sql`
+      SELECT * FROM audit_logs 
+      WHERE resource_type = ${resourceType} AND resource_id = ${resourceId}
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    `;
+  },
+
+  /**
+   * Get all audit logs
+   */
+  async getAll(limit = 1000) {
+    return await sql`
+      SELECT * FROM audit_logs 
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    `;
+  }
+};
+
+export default {
+  sql,
+  users,
+  solarInstallations,
+  monitoringData,
+  performanceData,
+  maintenanceLog,
+  contracts,
+  assessments,
+  marketplace,
+  finance,
+  oauthProviders,
+  sessions,
+  auditLogs
+};

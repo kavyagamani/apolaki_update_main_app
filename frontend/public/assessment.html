@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apolaki | Solar Assessment</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* Specific Styles for Map Integration */
+        .map-container {
+            height: 100%;
+            width: 100%;
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        #solarMap {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Tab switcher for Input Methods */
+        .input-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            background: #F1F5F9;
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .input-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-muted);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .input-tab.active {
+            background: white;
+            color: var(--color-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .coordinates-display {
+            font-family: monospace;
+            background: #1E293B;
+            color: #4ADE80;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: none;
+            /* Hidden until loc found */
+        }
+
+        .address-label {
+            font-weight: 500;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .address-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .address-btn {
+            margin-top: 15px;
+            padding: 10px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .address-btn:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .address-sample-tip {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="index.html" class="brand">
+                <i class="fa-solid fa-sun fa-spin-pulse" style="--fa-animation-duration: 3s;"></i> APOLAKI
+            </a>
+            <nav class="nav-pills">
+                <a href="index.html" class="nav-pill"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="assessment.html" class="nav-pill active">1. Assessment</a>
+                <a href="marketplace.html" class="nav-pill">2. Marketplace</a>
+                <a href="finance.html" class="nav-pill">3. Finance</a>
+                <a href="contracts.html" class="nav-pill">4. Contracts</a>
+                <a href="monitor.html" class="nav-pill">5. Monitor</a>
+                <a href="credits.html" class="nav-pill">6. Credits</a>
+                <a href="about.html" class="nav-pill">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-stage">
+        <div class="app-card">
+
+            <div class="progress-track">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="wizard-step active" id="step1">
+                <div class="form-panel">
+                    <h1>Solar Potential Map</h1>
+                    <p class="subtitle">Locate your neighborhood using NASA & Google Earth data.</p>
+
+                    <div class="input-tabs">
+                        <div class="input-tab active" onclick="setInputMode('address')">Address Search</div>
+                        <div class="input-tab" onclick="setInputMode('zip')">Zip Code</div>
+                        <div class="input-tab" onclick="setInputMode('pin')">Pin on Map</div>
+                    </div>
+
+                    <div id="input-address" style="max-width:400px;margin:auto;">
+                        <form id="addressForm" onsubmit="event.preventDefault(); geocodeAddress();">
+                            <label class="address-label" for="inpStreet">Street Address</label>
+                            <input class="address-input" type="text" id="inpStreet" name="street"
+                                placeholder="e.g. 123 Ayala Ave" list="streetSamples" autocomplete="street-address" required>
+                            <datalist id="streetSamples">
+                                <option value="123 Ayala Ave">
+                                <option value="456 EDSA">
+                                <option value="789 Taft Ave">
+                            </datalist>
+
+                            <label class="address-label" for="inpCity">City/Municipality</label>
+                            <input class="address-input" type="text" id="inpCity" name="city" placeholder="e.g. Makati"
+                                list="citySamples" autocomplete="address-level2" required>
+                            <datalist id="citySamples">
+                                <option value="Makati">
+                                <option value="Quezon City">
+                                <option value="Pasig">
+                                <option value="Cebu City">
+                            </datalist>
+
+                            <label class="address-label" for="inpProvince">Province</label>
+                            <input class="address-input" type="text" id="inpProvince" name="province"
+                                placeholder="e.g. Metro Manila" list="provinceSamples" autocomplete="address-level1" required>
+                            <datalist id="provinceSamples">
+                                <option value="Metro Manila">
+                                <option value="Cebu">
+                                <option value="Davao del Sur">
+                            </datalist>
+
+                            <label class="address-label" for="inpZip">Zip Code <span
+                                    style="color:#888;font-size:0.9em;">(optional)</span></label>
+                            <input class="address-input" type="text" id="inpZip" name="zip" placeholder="e.g. 1226"
+                                list="zipSamples" autocomplete="postal-code">
+                            <datalist id="zipSamples">
+                                <option value="1226">
+                                <option value="1100">
+                                <option value="1605">
+                            </datalist>
+
+                            <button type="submit" class="address-btn">Find</button>
+                            <div class="address-sample-tip">
+                                <strong>Sample:</strong> 123 Ayala Ave, Makati, Metro Manila, 1226
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="input-zip" style="display:none;">
+                        <label>Zip Code</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="inpZip" class="fancy-input" placeholder="e.g. 1200">
+                            <button class="btn btn-primary" onclick="geocodeZip()"><i
+                                    class="fa-solid fa-search"></i></button>
+                        </div>
+                    </div>
+
+                    <div id="input-pin" style="display:none;">
+                        <p style="font-size:0.9rem; color:var(--color-primary);">
+                            <i class="fa-solid fa-computer-mouse"></i> Click anywhere on the map on the right to drop a
+                            pin.
+                        </p>
+                    </div>
+
+                    <div id="coordsDisplay" class="coordinates-display">
+                        <i class="fa-solid fa-satellite-dish"></i> LAT: <span id="valLat">--</span> | LON: <span
+                            id="valLon">--</span>
+                    </div>
+
+                    <div class="action-row">
+                        <button class="btn btn-ghost" disabled>Back</button>
+                        <button class="btn btn-primary" id="btnAnalyze" disabled onclick="runSolarAnalysis()">
+                            Analyze Solar Potential <i class="fa-solid fa-bolt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="illustration-panel" style="padding:0;">
+                    <div class="map-container">
+                        <div id="solarMap"></div>
+                        <div
+                            style="position:absolute; bottom:20px; right:20px; background:white; padding:10px; border-radius:8px; z-index:999; font-size:0.75rem; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                            <strong>Irradiance Heatmap</strong><br>
+                            <span style="color:#F59E0B">●</span> High Potential<br>
+                            <span style="color:#3B82F6">●</span> Low Potential
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-step" id="step2">
+                <div class="form-panel" style="flex:2;">
+                    <h1>Querying Satellite Data...</h1>
+                    <p class="subtitle">Connecting to NASA POWER and Google Solar APIs.</p>
+                    <div class="console-ui" id="consoleOutput"></div>
+                </div>
+            </div>
+
+            <div class="wizard-step" id="step3">
+                <div class="form-panel" style="flex:2; align-items:center; text-align:center;">
+                    <div style="max-width:800px;">
+                        <h1>Neighborhood Solar Score</h1>
+                        <p class="subtitle">Based on location <strong id="resLoc"
+                                style="color:var(--color-primary)">...</strong></p>
+
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-lbl">Annual Sunshine</div>
+                                <div class="result-val" id="resSunHours">0 hrs</div>
+                                <small>NASA Meteorological Data</small>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-lbl">Peak Irradiance</div>
+                                <div class="result-val" id="resIrradiance">0 kWh/m²</div>
+                                <small>Global Horizontal (GHI)</small>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-lbl">Viable Roof Area</div>
+                                <div class="result-val" id="resRoof">0 sqm</div>
+                                <small>Google Solar Geometry</small>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-lbl">Potential Output</div>
+                                <div class="result-val" style="color:#F59E0B" id="resOutput">0 MWh/yr</div>
+                                <small>Est. Annual Generation</small>
+                            </div>
+                        </div>
+
+                        <div class="action-row" style="justify-content:center; gap:20px;">
+                            <button class="btn btn-ghost" onclick="location.reload()">New Search</button>
+                            <a href="marketplace.html" class="btn btn-primary">Find Installers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battery Storage Section -->
+            <div class="app-section" id="battery-storage-section" style="max-width:400px;margin:auto;margin-top:2rem;">
+                <h3>Battery Storage</h3>
+                <label for="batteryCapacity" class="address-label">Battery Capacity (kWh)</label>
+                <input class="address-input" type="number" id="batteryCapacity" min="0" step="0.1" placeholder="e.g. 5">
+                <label for="batteryType" class="address-label">Battery Type</label>
+                <select class="address-input" id="batteryType">
+                    <option value="lithium">Lithium-ion</option>
+                    <option value="lead">Lead-acid</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Appliance Utilization Section -->
+            <div class="app-section" id="appliance-utilization-section" style="max-width:400px;margin:auto;margin-top:2rem;">
+                <h3>Appliance Utilization</h3>
+                <table style="width:100%;margin-bottom:1rem;">
+                    <thead>
+                        <tr>
+                            <th>Appliance</th>
+                            <th>Wattage (W)</th>
+                            <th>Hours/Day</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applianceTable">
+                        <tr>
+                            <td><input type="text" value="Refrigerator" class="address-input"></td>
+                            <td><input type="number" value="150" class="address-input" style="width:80px;"></td>
+                            <td><input type="number" value="24" class="address-input" style="width:80px;"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="LED TV" class="address-input"></td>
+                            <td><input type="number" value="80" class="address-input" style="width:80px;"></td>
+                            <td><input type="number" value="4" class="address-input" style="width:80px;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="address-btn" style="background:#f1f5f9;color:#0ea5e9;" onclick="addApplianceRow()">Add Appliance</button>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const MOCK_MODE = true; // Set to FALSE when you have real API keys
+        const GOOGLE_API_KEY = "YOUR_GOOGLE_KEY_HERE";
+
+        // State
+        let map, marker;
+        let selectedLat = null, selectedLon = null;
+
+        // --- 2. MAP INITIALIZATION (Leaflet) ---
+        window.onload = function () {
+            // Default to Philippines view
+            map = L.map('solarMap').setView([14.5995, 120.9842], 13);
+
+            // Add OpenStreetMap Tile Layer (Free, no key needed for prototype)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Map Click Event
+            map.on('click', function (e) {
+                setPin(e.latlng.lat, e.latlng.lng);
+            });
+        }
+
+        // --- 3. INPUT HANDLING ---
+
+        // --- 4. GEOCODING (Address/Zip -> Lat/Lon) ---
+        async function geocodeAddress() {
+            const street = document.getElementById('inpStreet').value.trim();
+            const city = document.getElementById('inpCity').value.trim();
+            const province = document.getElementById('inpProvince').value.trim();
+            const zip = document.getElementById('inpZip').value.trim();
+
+            if (!street || !city || !province) {
+                alert("Please fill in street, city, and province.");
+                return;
+            }
+
+            // Build the address string
+            let query = `${street}, ${city}, ${province}, Philippines`;
+            if (zip) query = `${street}, ${city}, ${province}, ${zip}, Philippines`;
+
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data && data.length > 0) {
+                setPin(parseFloat(data[0].lat), parseFloat(data[0].lon));
+                map.setView([parseFloat(data[0].lat), parseFloat(data[0].lon)], 16);
+            } else {
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&country=Philippines`;
+            }
+        }
+
+        async function geocodeZip() {
+            const query = document.getElementById('inpZip').value;
+            if (!query) return alert("Enter Zip");
+            const url = `https://nominatim.openstreetmap.org/search?format=json&postalcode=${encodeURIComponent(query)}&country=Philippines&limit=1`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data && data.length > 0) {
+                setPin(parseFloat(data[0].lat), parseFloat(data[0].lon));
+                map.setView([parseFloat(data[0].lat), parseFloat(data[0].lon)], 16);
+            } else {
+                alert("Zip code not found.");
+            }
+        }
+
+        // --- 5. THE SOLAR ENGINE (API INTEGRATION) ---
+        function changeStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById('progressBar').style.width = (step / 3) * 100 + "%";
+        }
+
+        async function runSolarAnalysis() {
+            changeStep(2);
+            const consoleDiv = document.getElementById('consoleOutput');
+            const log = (msg) => { consoleDiv.innerHTML += `<div>> ${msg}</div>`; consoleDiv.scrollTop = consoleDiv.scrollHeight; };
+
+            // 5a. Call NASA POWER API (Meteorology)
+            // https://power.larc.nasa.gov/docs/methodology/
+            log(`Connecting to NASA POWER API for (${selectedLat.toFixed(2)}, ${selectedLon.toFixed(2)})...`);
+
+            let sunHours = 0;
+            let avgIrradiance = 0;
+
+            if (MOCK_MODE) {
+                await new Promise(r => setTimeout(r, 1000));
+                sunHours = 1825; // approx 5 hours * 365
+                avgIrradiance = 4.85; // kWh/m2/day
+                log("[NASA] Success: Historical Irradiance Data retrieved.");
+                log(`[NASA] Avg Daily Insolation: ${avgIrradiance} kWh/m²/day`);
+            } else {
+                try {
+                    // Real NASA API Call (Climatology for a point)
+                    // Param: ALLSKY_SFC_SW_DWN (All Sky Surface Shortwave Downward Irradiance)
+                    const nasaUrl = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=ALLSKY_SFC_SW_DWN&community=RE&longitude=${selectedLon}&latitude=${selectedLat}&format=JSON`;
+                    const nasaRes = await fetch(nasaUrl);
+                    const nasaData = await nasaRes.json();
+
+                    // Extract annual average
+                    avgIrradiance = nasaData.properties.parameter.ALLSKY_SFC_SW_DWN.ANN;
+                    sunHours = avgIrradiance * 365; // Rough approximation
+                    log("[NASA] Data retrieved successfully.");
+                } catch (e) {
+                    log("[ERROR] NASA API failed, using fallbacks.");
+                    avgIrradiance = 4.5;
+                }
+            }
+
+            // 5b. Call Google Solar API (Geometry)
+            // https://developers.google.com/maps/documentation/solar/overview
+            log("Querying Google Solar API for building geometry...");
+
+            let roofArea = 0;
+            let maxPanels = 0;
+
+            if (MOCK_MODE) {
+                await new Promise(r => setTimeout(r, 1200));
+                roofArea = 65; // sqm
+                maxPanels = 24;
+                log("[Google Solar] Building footprint identified.");
+                log("[Google Solar] Pitch and Azimuth calculated.");
+                log("[Google Solar] Shading analysis complete (Yearly flux).");
+            } else {
+                // Real Google Solar Call (requires billing enabled)
+                // const solarUrl = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${selectedLat}&location.longitude=${selectedLon}&requiredQuality=HIGH&key=${GOOGLE_API_KEY}`;
+                // const solarRes = await fetch(solarUrl);
+                // ... parsing logic here ...
+            }
+
+            // 5c. Calculate Results
+            log("Compiling final report...");
+            setTimeout(() => {
+                // Simple Math: Irradiance * Area * Efficiency (18%) * Performance Ratio (0.75)
+                const annualGenerationMWh = (avgIrradiance * 365 * roofArea * 0.18 * 0.75) / 1000;
+
+                // Update DOM
+                document.getElementById('resLoc').innerText = `${selectedLat.toFixed(3)}, ${selectedLon.toFixed(3)}`;
+                document.getElementById('resSunHours').innerText = Math.round(sunHours) + " hrs/yr";
+                document.getElementById('resIrradiance').innerText = avgIrradiance + " kWh/m²";
+                document.getElementById('resRoof').innerText = roofArea + " sqm";
+                document.getElementById('resOutput').innerText = annualGenerationMWh.toFixed(2) + " MWh/yr";
+
+                changeStep(3);
+            }, 1000);
+        }
+
+        function setInputMode(mode) {
+            document.querySelectorAll('.input-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('input-address').style.display = 'none';
+            document.getElementById('input-zip').style.display = 'none';
+            document.getElementById('input-pin').style.display = 'none';
+
+            if (mode === 'address') {
+                document.querySelectorAll('.input-tab')[0].classList.add('active');
+                document.getElementById('input-address').style.display = '';
+            } else if (mode === 'zip') {
+                document.querySelectorAll('.input-tab')[1].classList.add('active');
+                document.getElementById('input-zip').style.display = '';
+            } else if (mode === 'pin') {
+                document.querySelectorAll('.input-tab')[2].classList.add('active');
+                document.getElementById('input-pin').style.display = '';
+            }
+        }
+
+        // --- 6. PIN PLACEMENT (Map Click & Manual) ---
+        function setPin(lat, lon) {
+            selectedLat = lat;
+            selectedLon = lon;
+
+            // Remove old marker
+            if (marker) map.removeLayer(marker);
+
+            // Add new marker
+            marker = L.marker([lat, lon]).addTo(map);
+
+            // Show coordinates
+            const coordsDisplay = document.getElementById('coordsDisplay');
+            if (coordsDisplay) {
+                coordsDisplay.style.display = 'block';
+                document.getElementById('valLat').innerText = lat.toFixed(5);
+                document.getElementById('valLon').innerText = lon.toFixed(5);
+            }
+
+            // Enable Analyze button
+            const btnAnalyze = document.getElementById('btnAnalyze');
+            if (btnAnalyze) btnAnalyze.disabled = false;
+        }
+
+        function autofillSampleAddress() {
+            document.getElementById('inpStreet').value = "123 Ayala Ave";
+            document.getElementById('inpCity').value = "Makati";
+            document.getElementById('inpProvince').value = "Metro Manila";
+            document.getElementById('inpZip').value = "1226";
+        }
+
+        function addApplianceRow() {
+            const table = document.getElementById('applianceTable');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+        <td><input type="text" class="address-input"></td>
+        <td><input type="number" class="address-input" style="width:80px;"></td>
+        <td><input type="number" class="address-input" style="width:80px;"></td>
+    `;
+            table.appendChild(row);
+        }
+    </script>
+</body>
+
+
+
+</html></html>

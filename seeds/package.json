@@ -1,0 +1,31 @@
+{
+  "name": "apolaki-seed",
+  "version": "1.0.0",
+  "description": "Standalone data seeding utility for the Apolaki Solar Platform",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "seed": "node src/index.js",
+    "seed:users": "node src/index.js --only users",
+    "seed:installations": "node src/index.js --only installations",
+    "seed:monitoring": "node src/index.js --only monitoring",
+    "seed:marketplace": "node src/index.js --only marketplace",
+    "seed:contracts": "node src/index.js --only contracts",
+    "seed:assessments": "node src/index.js --only assessments",
+    "seed:finance": "node src/index.js --only finance",
+    "seed:maintenance": "node src/index.js --only maintenance",
+    "seed:performance": "node src/index.js --only performance",
+    "seed:fresh": "node src/index.js --fresh",
+    "seed:verify": "node src/verify.js",
+    "teardown": "node src/teardown.js",
+    "teardown:confirm": "node src/teardown.js --confirm"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.3.1",
+    "pg": "^8.19.0"
+  }
+}

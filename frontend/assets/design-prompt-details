@@ -1,0 +1,33 @@
+we are going to build a platform that will serve as a marketplace for solar energy:
+
+the intitial journey will be where user registers, gives his address details, typical monthly bill, size of the roof and/or terrrace for installation 
+there will be an integration with google maps, nasa api, for understanding the solar potential of the location
+based on that we will provide a set of recommendations of how much KW user will need to install, is it recommended to have battery backup or not
+then we will go into each of the modules below for further stages of the journey:
+
+it will have 4 tabs and 4 modules totally 
+
+module 1: Simplification of finance for someone that has decided to install solar but is unsure of the costing
+    we will have a journey for how much KW they want 
+        with battery 
+        without battery 
+        what will it cost as variations 
+        how much will it cost per month for the end users
+    1.1: how will we pay the installer 
+    1.2: how will we pay the financier 
+    1.3: how will we pay ourselves -- admin persona only 
+
+module 2: Marketplace of solar 
+    installers: this will have list of all installers in the pin provided 
+    equipment suppliers: this will have the list of all suppliers that will be a good fit for given location 
+    architects and consultants: this will have the list of all architects/consultants who can provide expertise here 
+
+module 3: Dashboard and mobile app for monitoring 
+        users: will be able to monitor if their installations are ok 
+        service providers: solarmoms who will service the installations 
+        service packages: annual packages for maintenance
+
+module 4: Carbon credits and resale marketplace 
+        users: will be able to see how much carbon credits they have generated 
+        resale: will be able to resell the carbon credits on a marketplace we will build for this purpose 
+        admin: will be able to monitor the carbon credit generation and resale marketplace

@@ -1,0 +1,133 @@
+# Apolaki Solar Platform - Netlify Deployment Configuration
+# Combines frontend (Vue.js static site) with backend (Node.js functions)
+#
+# Environment Variables Required:
+#   - DATABASE_URL or (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
+#   - JWT_SECRET (production)
+#   - JWT_REFRESH_SECRET (production)
+#   - NODE_ENV (set to 'production')
+#   - All other database and API configuration variables
+#
+# Setup:
+#   1. netlify link (connect to your Netlify site)
+#   2. netlify env:set KEY VALUE (set variables)
+#   3. netlify deploy
+
+[build]
+  # Root directory of the monorepo
+  base = "."
+  
+  # Build command - installs both frontend and backend deps, then builds
+  command = "npm ci && npm ci --include=dev --prefix frontend && npm ci --prefix middleware/netlify-db-service && npm run build --prefix frontend && npm run build --prefix middleware/netlify-db-service"
+  
+  # Frontend static files directory
+  publish = "frontend/dist"
+  
+  # Node.js version
+  node_version = "18.x"
+  
+  # Netlify Functions directory (serverless backend)
+  functions = "middleware/netlify-db-service/.netlify/functions"
+
+# ============================================================================
+# Functions configuration
+# ============================================================================
+[functions]
+  # Use Node File Tracing (nft) bundler — it follows require/import chains
+  # automatically, which handles our ESM monorepo structure correctly.
+  # esbuild (default) breaks ESM default exports from deep relative imports.
+  node_bundler = "nft"
+  
+  # Include config that handler.js references via relative paths
+  included_files = [
+    "config/**",
+    "middleware/netlify-db-service/src/**",
+    "middleware/netlify-db-service/package.json"
+  ]
+
+# ============================================================================
+# Redirects and Rewrites
+# ============================================================================
+[[redirects]]
+  # Proxy API requests to backend functions
+  from = "/api/*"
+  to = "/.netlify/functions/handler/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  # SPA fallback - serve index.html for all non-matching routes (must be last)
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ============================================================================
+# Headers
+# ============================================================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    
+    # HSTS - require HTTPS
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    # API specific headers
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    # CORS headers for API endpoints
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    Access-Control-Allow-Credentials = "true"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    # Cache static assets
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ============================================================================
+# Environment-specific configuration (production)
+# ============================================================================
+[context.production]
+  # Production build command (same as main build)
+  command = "npm ci && npm ci --include=dev --prefix frontend && npm ci --prefix middleware/netlify-db-service && npm run build --prefix frontend && npm run build --prefix middleware/netlify-db-service"
+  
+  # Environment variables for production (set in Netlify dashboard)
+  [context.production.environment]
+    NODE_ENV = "production"
+
+# ============================================================================
+# Environment-specific configuration (staging)
+# ============================================================================
+[context.staging]
+  command = "npm ci && npm ci --include=dev --prefix frontend && npm ci --prefix middleware/netlify-db-service && npm run build --prefix frontend && npm run build --prefix middleware/netlify-db-service"
+  
+  [context.staging.environment]
+    NODE_ENV = "staging"
+
+# ============================================================================
+# Environment-specific configuration (development/preview)
+# ============================================================================
+[context.deploy-preview]
+  command = "npm ci && npm ci --include=dev --prefix frontend && npm ci --prefix middleware/netlify-db-service && npm run build --prefix frontend && npm run build --prefix middleware/netlify-db-service"
+  
+  [context.deploy-preview.environment]
+    NODE_ENV = "development"
+
+[context.branch-deploy]
+  command = "npm ci && npm ci --include=dev --prefix frontend && npm ci --prefix middleware/netlify-db-service && npm run build --prefix frontend && npm run build --prefix middleware/netlify-db-service"
+  
+  [context.branch-deploy.environment]
+    NODE_ENV = "development"

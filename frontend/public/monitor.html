@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apolaki | Monitor & Maintain</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- DASHBOARD SPECIFIC STYLES --- */
+
+        /* Layout overrides for Dashboard */
+        .app-card {
+            max-width: 1200px;
+            flex-direction: row;
+            background: #F8FAFC; /* Softer background for dashboard */
+        }
+
+        /* SIDEBAR NAV */
+        .dash-sidebar {
+            flex: 0 0 280px;
+            background: white;
+            border-right: 1px solid #E2E8F0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .dash-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--color-muted);
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+        }
+        .dash-nav-item:hover { background: #F1F5F9; color: var(--color-dark); }
+        .dash-nav-item.active {
+            background: var(--grad-action);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(37,99,235,0.3);
+        }
+
+        /* MAIN DASHBOARD AREA */
+        .dash-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: none; /* Hidden by default, toggled via JS */
+            animation: fadeIn 0.4s ease-out;
+        }
+        .dash-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+        /* WIDGETS (Cards) */
+        .widget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .widget-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        /* Energy Flow Animation Container */
+        .energy-flow-viz {
+            height: 200px;
+            background: #1E293B;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            color: white;
+            position: relative;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .flow-node {
+            text-align: center;
+            z-index: 2;
+        }
+        .flow-icon {
+            width: 50px; height: 50px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px auto;
+            font-size: 1.2rem;
+        }
+        
+        /* Animated Connecting Lines */
+        .flow-line {
+            position: absolute;
+            top: 40%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1;
+        }
+        .flow-dot {
+            position: absolute;
+            top: -4px;
+            width: 10px; height: 10px;
+            background: #4ADE80;
+            border-radius: 50%;
+            animation: flowMove 2s infinite linear;
+            box-shadow: 0 0 10px #4ADE80;
+        }
+        @keyframes flowMove { 0% { left: 0%; } 100% { left: 100%; } }
+
+        /* SERVICE PACKAGE CARDS */
+        .pkg-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .pkg-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .pkg-card:hover { transform: translateY(-5px); border-color: var(--color-primary); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .pkg-card.featured { border: 2px solid var(--color-primary); position: relative; }
+        .pkg-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--grad-action); color: white;
+            padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+        }
+
+        /* SOLAR MOM PROFILE */
+        .mom-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FFF 100%);
+            border: 1px solid #FCD34D;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+        .mom-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #F59E0B;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .status-ok { background: #DCFCE7; color: #166534; }
+        .status-warn { background: #FEF3C7; color: #92400E; }
+
+        @media (max-width: 900px) {
+            .app-card { flex-direction: column; }
+            .dash-sidebar { flex-direction: row; overflow-x: auto; padding: 1rem; flex: none; }
+            .pkg-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="index.html" class="brand">
+                <i class="fa-solid fa-sun fa-spin-pulse" style="--fa-animation-duration: 3s;"></i> APOLAKI
+            </a>
+            <nav class="nav-pills">
+                <a href="index.html" class="nav-pill active"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="assessment.html" class="nav-pill">1. Assessment</a>
+                <a href="marketplace.html" class="nav-pill">2. Marketplace</a>
+                <a href="finance.html" class="nav-pill">3. Finance</a>
+                <a href="contracts.html" class="nav-pill">4. Contracts</a>
+                <a href="monitor.html" class="nav-pill active">5. Monitor</a>
+                <a href="credits.html" class="nav-pill">6. Credits</a>
+                <a href="about.html" class="nav-pill">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-stage">
+        <div class="app-card">
+            
+            <aside class="dash-sidebar">
+                <div style="margin-bottom:1rem; padding-left:10px;">
+                    <div style="font-size:0.8rem; color:#94A3B8; font-weight:700; text-transform:uppercase;">My System</div>
+                </div>
+                
+                <div class="dash-nav-item active" onclick="switchTab('dashboard', this)">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </div>
+                <div class="dash-nav-item" onclick="switchTab('maintenance', this)">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                </div>
+                <div class="dash-nav-item" onclick="switchTab('packages', this)">
+                    <i class="fa-solid fa-box-archive"></i> Service Packages
+                </div>
+                
+                <div style="margin-top:auto; padding:1rem; background:#F8FAFC; border-radius:12px; text-align:center;">
+                    <small>System Health</small>
+                    <div style="color:#10B981; font-weight:800; display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <span style="display:block; width:8px; height:8px; background:#10B981; border-radius:50%; box-shadow:0 0 5px #10B981;"></span>
+                        OPTIMAL
+                    </div>
+                </div>
+            </aside>
+
+            <section id="view-dashboard" class="dash-content active">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <h1>System Overview</h1>
+                    <button class="btn btn-ghost"><i class="fa-solid fa-download"></i> Report</button>
+                </div>
+
+                <div class="energy-flow-viz">
+                    <div class="flow-line">
+                        <div class="flow-dot"></div>
+                    </div>
+
+                    <div class="flow-node">
+                        <div class="flow-icon" style="color:#F59E0B;"><i class="fa-solid fa-sun"></i></div>
+                        <small>Solar</small><br><strong>4.2 kW</strong>
+                    </div>
+                    <div class="flow-node">
+                        <div class="flow-icon" style="color:#3B82F6;"><i class="fa-solid fa-house-chimney"></i></div>
+                        <small>Home</small><br><strong>2.1 kW</strong>
+                    </div>
+                    <div class="flow-node">
+                        <div class="flow-icon" style="color:#10B981;"><i class="fa-solid fa-battery-full"></i></div>
+                        <small>Battery</small><br><strong>98%</strong>
+                    </div>
+                    <div class="flow-node">
+                        <div class="flow-icon" style="color:#94A3B8;"><i class="fa-solid fa-tower-broadcast"></i></div>
+                        <small>Grid</small><br><strong>0 kW</strong>
+                    </div>
+                </div>
+
+                <div class="widget-grid">
+                    <div class="widget-card">
+                        <div style="color:#64748B; font-size:0.9rem;">Today's Generation</div>
+                        <div style="font-size:2rem; font-weight:800; color:#0F172A;">24.5 kWh</div>
+                        <div style="color:#10B981; font-size:0.8rem;"><i class="fa-solid fa-arrow-up"></i> 12% vs avg</div>
+                    </div>
+                    <div class="widget-card">
+                        <div style="color:#64748B; font-size:0.9rem;">Total Savings (YTD)</div>
+                        <div style="font-size:2rem; font-weight:800; color:#0F172A;">₱ 42,300</div>
+                        <div style="color:#F59E0B; font-size:0.8rem;">~ 3.5 tons CO2</div>
+                    </div>
+                    <div class="widget-card">
+                        <div style="color:#64748B; font-size:0.9rem;">Battery Health</div>
+                        <div style="font-size:2rem; font-weight:800; color:#0F172A;">98%</div>
+                        <div style="color:#64748B; font-size:0.8rem;">Est. life: 9 Years</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-maintenance" class="dash-content">
+                <h1>Maintenance Hub</h1>
+                <p class="subtitle">Book trusted "Solar Moms" from your local community for cleaning and checks.</p>
+
+                <div class="mom-profile">
+                    <div class="mom-avatar" style="background:#ddd; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-user-tie fa-2x" style="color:#fff"></i>
+                    </div>
+                    
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <h3 style="margin:0;">Tita Baby's Solar Care</h3>
+                            <span class="status-pill status-ok">Available Now</span>
+                        </div>
+                        <div style="color:#64748B; font-size:0.9rem; margin-bottom:5px;">
+                            <i class="fa-solid fa-location-dot"></i> 2km away • Verified "Solar Mom" since 2024
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <span class="status-pill" style="background:white; border:1px solid #e2e8f0;">4.9 <i class="fa-solid fa-star" style="color:#F59E0B"></i></span>
+                            <span class="status-pill" style="background:white; border:1px solid #e2e8f0;">150 Jobs Done</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="btn btn-primary" onclick="alert('Booking Request Sent to Tita Baby!')">Book Cleaning (₱500)</button>
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <h4 style="margin-top:0;">Service History</h4>
+                    <table style="width:100%; text-align:left; border-collapse:collapse; font-size:0.9rem;">
+                        <tr style="border-bottom:1px solid #eee; color:#64748B;">
+                            <th style="padding:10px;">Date</th>
+                            <th style="padding:10px;">Service</th>
+                            <th style="padding:10px;">Provider</th>
+                            <th style="padding:10px;">Status</th>
+                        </tr>
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;">Oct 12, 2025</td>
+                            <td style="padding:10px;">Panel Cleaning</td>
+                            <td style="padding:10px;">Mommy Glo</td>
+                            <td style="padding:10px;"><span class="status-pill status-ok">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px;">Jun 05, 2025</td>
+                            <td style="padding:10px;">Inverter Check</td>
+                            <td style="padding:10px;">Apolaki Tech</td>
+                            <td style="padding:10px;"><span class="status-pill status-ok">Completed</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <section id="view-packages" class="dash-content">
+                <div style="text-align:center; margin-bottom:2rem;">
+                    <h1>Peace of Mind Packages</h1>
+                    <p class="subtitle">Annual plans to keep your system running at 100% efficiency.</p>
+                </div>
+
+                <div class="pkg-grid">
+                    <div class="pkg-card">
+                        <h3>Basic Care</h3>
+                        <div style="font-size:2rem; font-weight:800; margin:1rem 0;">₱ 2,500<span style="font-size:1rem; font-weight:400;">/yr</span></div>
+                        <ul style="text-align:left; color:#64748B; list-style:none; padding:0; line-height:2;">
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> 2x Panel Cleaning</li>
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> App Monitoring</li>
+                            <li style="opacity:0.5"><i class="fa-solid fa-xmark"></i> Priority Support</li>
+                        </ul>
+                        <button class="btn btn-ghost" style="width:100%; border:1px solid #e2e8f0; margin-top:1rem;">Select Basic</button>
+                    </div>
+
+                    <div class="pkg-card featured">
+                        <div class="pkg-badge">MOST POPULAR</div>
+                        <h3>Gold Standard</h3>
+                        <div style="font-size:2rem; font-weight:800; margin:1rem 0; color:var(--color-primary);">₱ 5,000<span style="font-size:1rem; font-weight:400;">/yr</span></div>
+                        <ul style="text-align:left; color:#64748B; list-style:none; padding:0; line-height:2;">
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> 4x Panel Cleaning</li>
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> 1x Technical Audit</li>
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> "Solar Mom" Priority</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Select Gold</button>
+                    </div>
+
+                    <div class="pkg-card">
+                        <h3>Platinum</h3>
+                        <div style="font-size:2rem; font-weight:800; margin:1rem 0;">₱ 9,000<span style="font-size:1rem; font-weight:400;">/yr</span></div>
+                        <ul style="text-align:left; color:#64748B; list-style:none; padding:0; line-height:2;">
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> Monthly Cleaning</li>
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> Full Insurance Coverage</li>
+                            <li><i class="fa-solid fa-check" style="color:#10B981"></i> 24/7 Hotline</li>
+                        </ul>
+                        <button class="btn btn-ghost" style="width:100%; border:1px solid #e2e8f0; margin-top:1rem;">Select Platinum</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        function switchTab(viewId, navItem) {
+            // Update Nav UI
+            document.querySelectorAll('.dash-nav-item').forEach(el => el.classList.remove('active'));
+            navItem.classList.add('active');
+
+            // Switch Content
+            document.querySelectorAll('.dash-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

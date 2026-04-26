@@ -1,0 +1,202 @@
+/* 
+  ========================================
+  APOLAKI SOLAR PLATFORM
+  COLOR PALETTE - QUICK REFERENCE
+  ========================================
+  
+  This file provides a visual quick reference for all colors used in the Apolaki platform.
+  For detailed usage guidelines, see docs/COLOR_DESIGN_SYSTEM.md
+*/
+
+:root {
+  /* 
+    PRIMARY BRAND COLORS
+    Solar Gold & Sky Blue - Main identity colors
+  */
+  --color-solar-gold: #FFB81C;
+  --color-solar-dark: #F5A700;
+  --color-solar-light: #FFF5DB;
+  --color-solar-xlight: #FFFBF0;
+  
+  --color-sky-blue: #0066CC;
+  --color-sky-dark: #0052A3;
+  --color-sky-light: #B8DCFF;
+  --color-sky-xlight: #E0F2FF;
+
+  /* 
+    FUNCTIONAL COLORS
+    Used for actions, alerts, and status indicators
+  */
+  
+  /* Success: Green - Positive actions, confirmations */
+  --color-success: #00B050;
+  --color-success-light: #DCFCE7;
+  --color-success-dark: #00843D;
+  
+  /* Warning: Orange - Cautions, alerts */
+  --color-warning: #FF9500;
+  --color-warning-light: #FFEDD5;
+  --color-warning-dark: #EA580C;
+  
+  /* Error: Red - Errors, destructive actions */
+  --color-error: #E74C3C;
+  --color-error-light: #FEE2E2;
+  --color-error-dark: #DC2626;
+  
+  /* Info: Cyan - Information, tips */
+  --color-info: #0EA5E9;
+  --color-info-light: #CFFAFE;
+  --color-info-dark: #0369A1;
+
+  /* 
+    NEUTRAL PALETTE
+    Gray scale for text, backgrounds, and borders
+  */
+  --color-gray-50: #F9FAFB;    /* Lightest gray, body background */
+  --color-gray-100: #F3F4F6;   /* Light gray, alternative surface */
+  --color-gray-200: #E5E7EB;   /* Border, divider */
+  --color-gray-300: #D1D5DB;   /* Dark border */
+  --color-gray-400: #9CA3AF;   /* Placeholder text */
+  --color-gray-500: #6B7280;   /* Muted text, secondary labels */
+  --color-gray-600: #4B5563;   /* Secondary text */
+  --color-gray-700: #374151;   /* Tertiary text, labels */
+  --color-gray-800: #1F2937;   /* Strong secondary text */
+  --color-gray-900: #111827;   /* Main text, headings */
+
+  /* 
+    SEMANTIC COLORS
+    Map functional colors to usage patterns
+  */
+  --color-text-primary: var(--color-gray-900);      /* Main text */
+  --color-text-secondary: var(--color-gray-700);    /* Secondary text */
+  --color-text-muted: var(--color-gray-500);        /* Muted/tertiary */
+  
+  --color-bg-primary: #FFFFFF;                       /* Card backgrounds */
+  --color-bg-secondary: var(--color-gray-50);       /* Page background */
+  --color-bg-tertiary: var(--color-gray-100);       /* Alternative surface */
+  
+  --color-border-default: var(--color-gray-200);    /* Standard border */
+  --color-border-light: var(--color-gray-100);      /* Light border */
+  --color-border-dark: var(--color-gray-300);       /* Dark border */
+}
+
+/* 
+  ========================================
+  COLOR SWATCHES FOR REFERENCE
+  ========================================
+  
+  Copy-paste HTML below into a test page to see actual colors rendered
+*/
+
+/*
+<!-- Solar Gold Palette -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 2rem;">
+  <div style="background: #FFFBF0; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #6B7280; text-transform: uppercase;">Solar XLight</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827;">#FFFBF0</p>
+  </div>
+  <div style="background: #FFF5DB; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #6B7280; text-transform: uppercase;">Solar Light</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827;">#FFF5DB</p>
+  </div>
+  <div style="background: #FFB81C; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Solar Gold</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#FFB81C</p>
+  </div>
+  <div style="background: #F5A700; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Solar Dark</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#F5A700</p>
+  </div>
+</div>
+
+<!-- Sky Blue Palette -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 2rem;">
+  <div style="background: #E0F2FF; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #6B7280; text-transform: uppercase;">Sky XLight</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827;">#E0F2FF</p>
+  </div>
+  <div style="background: #B8DCFF; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #6B7280; text-transform: uppercase;">Sky Light</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827;">#B8DCFF</p>
+  </div>
+  <div style="background: #0066CC; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Sky Blue</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#0066CC</p>
+  </div>
+  <div style="background: #0052A3; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Sky Dark</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#0052A3</p>
+  </div>
+</div>
+
+<!-- Functional Colors -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 2rem;">
+  <!-- Success -->
+  <div style="background: #DCFCE7; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #00843D; text-transform: uppercase;">Success Light</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #00843D;">#DCFCE7</p>
+  </div>
+  <div style="background: #00B050; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Success</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#00B050</p>
+  </div>
+  
+  <!-- Warning -->
+  <div style="background: #FFEDD5; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #EA580C; text-transform: uppercase;">Warning Light</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #EA580C;">#FFEDD5</p>
+  </div>
+  <div style="background: #FF9500; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Warning</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#FF9500</p>
+  </div>
+
+  <!-- Error -->
+  <div style="background: #FEE2E2; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #DC2626; text-transform: uppercase;">Error Light</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #DC2626;">#FEE2E2</p>
+  </div>
+  <div style="background: #E74C3C; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Error</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#E74C3C</p>
+  </div>
+
+  <!-- Info -->
+  <div style="background: #CFFAFE; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #0369A1; text-transform: uppercase;">Info Light</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #0369A1;">#CFFAFE</p>
+  </div>
+  <div style="background: #0EA5E9; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Info</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white;">#0EA5E9</p>
+  </div>
+</div>
+
+<!-- Gray Palette -->
+<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; padding: 2rem;">
+  <div style="background: #F9FAFB; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #6B7280; text-transform: uppercase;">Gray 50</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827; font-size: 0.75rem;">#F9FAFB</p>
+  </div>
+  <div style="background: #F3F4F6; padding: 2rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #6B7280; text-transform: uppercase;">Gray 100</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827; font-size: 0.75rem;">#F3F4F6</p>
+  </div>
+  <div style="background: #E5E7EB; padding: 2rem; border-radius: 8px; border: 1px solid #D1D5DB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: #374151; text-transform: uppercase;">Gray 200</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: #111827; font-size: 0.75rem;">#E5E7EB</p>
+  </div>
+  <div style="background: #9CA3AF; padding: 2rem; border-radius: 8px; border: 1px solid #D1D5DB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Gray 400</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white; font-size: 0.75rem;">#9CA3AF</p>
+  </div>
+  <div style="background: #111827; padding: 2rem; border-radius: 8px; border: 1px solid #D1D5DB;">
+    <p style="margin: 0; font-weight: 600; font-size: 0.75rem; color: white; text-transform: uppercase;">Gray 900</p>
+    <p style="margin: 0.5rem 0 0 0; font-family: monospace; color: white; font-size: 0.75rem;">#111827</p>
+  </div>
+</div>
+*/
+
+/* ========================================
+   END OF COLOR REFERENCE
+   ======================================== */

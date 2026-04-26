@@ -1,0 +1,200 @@
+# APOLAKI LOCAL DEVELOPMENT - QUICK REFERENCE
+
+## 🚀 START SERVICES (3 Simple Steps)
+
+### 1. Backend (Terminal 1)
+```bash
+cd middleware/netlify-db-service
+npm run dev
+```
+Expected: `✅ Seeded default admin user: admin@apolaki.com / admin123`
+
+### 2. Frontend (Terminal 2)
+```bash
+cd frontend
+npm run dev
+```
+Expected: `Server running at http://localhost:5173`
+
+### 3. Verify Everything Works
+```bash
+./verify-local-login.sh
+```
+Expected: All checks show ✅
+
+## 🔐 LOGIN CREDENTIALS
+
+| Field | Value |
+|-------|-------|
+| Email | `admin@apolaki.com` |
+| Password | `admin123` |
+
+## 🌐 URLs
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:3001/api |
+| Login Page | http://localhost:5173/login |
+| Database | localhost:5432/apolaki_db |
+
+## 🎨 COLOR THEME
+
+### Toolbar/Theme Toggle
+- Sun/Moon icon in top-right navbar
+- Click to switch dark ↔ light
+- Preference saved in localStorage
+
+### Light Mode
+- Background: White
+- Primary: Solar Gold (#D4A600)
+- Secondary: Sky Blue (#5B8EC8)
+
+### Dark Mode
+- Background: Dark (#1A1A1A)
+- Primary: Light Gold (#E8B92C)
+- Secondary: Light Blue (#7A9FD8)
+
+## 🧪 TEST LOGIN
+
+### Via Browser
+1. Open http://localhost:5173/login
+2. Enter: admin@apolaki.com / admin123
+3. Click Login
+4. Should redirect to dashboard
+
+### Via API/curl
+```bash
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@apolaki.com","password":"admin123"}'
+```
+Response should have: `"success": true` + JWT token
+
+## 🔍 TROUBLESHOOTING
+
+### Port Already in Use
+```bash
+lsof -i :3001 | grep LISTEN | awk '{print $2}' | xargs kill -9
+lsof -i :5173 | grep LISTEN | awk '{print $2}' | xargs kill -9
+```
+
+### Database Not Running
+```bash
+# macOS with Homebrew
+brew services start postgresql
+
+# Check status
+pg_isready -h localhost -p 5432
+```
+
+### Check Database Manually
+```bash
+psql -U apolaki_user -d apolaki_db -c "SELECT * FROM users;"
+```
+
+### Frontend Shows Blank Page
+```bash
+cd frontend
+npm install
+npm run dev
+# Check browser console (F12) for errors
+```
+
+### Login Fails in Browser
+1. Open DevTools (F12) → Network tab
+2. Try login
+3. Look for `/api/auth/login` request
+4. Check response status (should be 200)
+5. Check browser console for JS errors
+
+## 📁 KEY FILES
+
+### Backend
+- Login endpoint: `middleware/netlify-db-service/src/routes/auth.js`
+- Database schema: `middleware/netlify-db-service/src/db.js`
+- Config: `middleware/netlify-db-service/.env`
+
+### Frontend
+- Main app: `frontend/src/App.vue`
+- Login form: `frontend/src/views/Login.vue`
+- Colors: `frontend/src/styles/main.css`
+- Auth state: `frontend/src/stores/userStore.js`
+- API client: `frontend/src/services/api.js`
+- Vite config: `frontend/vite.config.js`
+
+## 📊 WHAT'S WORKING
+
+✅ Backend API (port 3001)
+✅ Frontend server (port 5173)
+✅ PostgreSQL database
+✅ Admin user seeded
+✅ Login with email/password
+✅ JWT tokens (24-hour expiry)
+✅ Dark/light theme toggle
+✅ Color system (Solar Gold, Sky Blue)
+✅ Responsive UI (mobile/tablet/desktop)
+✅ Status bar and buttons visible
+✅ Footer at bottom of page
+✅ Frontend-backend proxy (/api)
+✅ Error handling and messages
+
+## 📚 FULL DOCUMENTATION
+
+See these files for complete info:
+- `LOCAL_DEVELOPMENT_GUIDE.md` - Complete guide
+- `LOCAL_DEVELOPMENT_STATUS.md` - Status report
+- `DOCUMENTATION.md` - Full project docs
+- `docs/SETUP_GUIDE.md` - Setup steps
+
+## 💡 TIPS
+
+- Backend auto-seeds admin user on startup
+- Frontend stores token in `localStorage`
+- Theme preference saved in `localStorage.theme`
+- All errors logged in terminal and browser console
+- API proxy in Vite config: `/api` → `http://localhost:3001`
+- JWT token expires after 24 hours (needs refresh)
+
+## ❓ QUICK DEBUG COMMANDS
+
+```bash
+# Check backend running
+lsof -i :3001
+
+# Check frontend running
+lsof -i :5173
+
+# Test backend
+curl http://localhost:3001/api/health
+
+# Test login API
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@apolaki.com","password":"admin123"}'
+
+# Check database
+psql -U apolaki_user -d apolaki_db
+
+# List users in DB
+psql -U apolaki_user -d apolaki_db -c "SELECT id, email, role FROM users;"
+
+# Check database connection string
+cat middleware/netlify-db-service/.env | grep DATABASE_URL
+```
+
+## ✨ NEXT STEPS
+
+1. ✅ Run `./verify-local-login.sh`
+2. ✅ Open http://localhost:5173
+3. ✅ Login with admin@apolaki.com / admin123
+4. ✅ Test theme toggle (sun/moon icon)
+5. ✅ Verify colors and visibility
+6. 🔄 Create test users (signup page)
+7. 🔄 Add solar installations
+8. 🔄 Test other features
+
+---
+
+**Last Updated:** January 3, 2025  
+**Status:** ✅ ALL SYSTEMS GO

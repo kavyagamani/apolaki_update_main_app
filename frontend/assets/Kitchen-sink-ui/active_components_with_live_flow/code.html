@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Apolaki Intelligence - Active Components</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @font-face {
+            font-family: 'TT Fors';
+            src: url('https://fonts.cdnfonts.com/css/tt-fors') format('woff2');
+            font-weight: 700;
+        }
+        body { 
+            font-family: 'TT Fors', 'Plus Jakarta Sans', sans-serif; 
+            -webkit-font-smoothing: antialiased; 
+            background-color: #fdfdfd;
+        }
+        .tt-fors { font-family: 'TT Fors', sans-serif; }
+        .tt-fors-bold { font-family: 'TT Fors', sans-serif; font-weight: 700; }
+        .tight-display { letter-spacing: -0.02em; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .fill-1 { font-variation-settings: 'FILL' 1; }
+        ::-webkit-scrollbar { display: none; }
+        .tap-highlight-none { -webkit-tap-highlight-color: transparent; }
+        
+        .energy-node {
+            background: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(15, 108, 189, 0.05);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0F6CBD",
+                        "secondary": "#F4C94C",
+                        "background": "#FDFDFD",
+                        "on-surface": "#1A1C1C",
+                        "on-surface-variant": "#414751",
+                        "outline": "#E2E8F0",
+                        "surface-container-lowest": "#FFFFFF",
+                        "inverse-surface": "#1A1C1E"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "4xl": "2rem",
+                        "full": "9999px"
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface tt-fors">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-5 w-full sticky top-0 z-50 bg-white h-16">
+<div class="flex items-center">
+<img alt="Apolaki Logo" class="w-auto object-contain h-10" src="https://lh3.googleusercontent.com/aida/ADBb0uhEyrNrC8SfZuaMPvG1lXK-7PqtGkUOtDmxFmnVIskwppx12fWcA__-Q2fKt34_Eq6xS3EBKyszv0jzSz2TwuBCnV3cpX_gr5-I169R86kt4Kbx9YoowRrmUoIBWE0tJ6B9G_I2vs1IfYgaa9_0I1l_YKUu6vq789S4X0nFzoWe9pWSn9TWJr3fLXmOm4bjH-IEu1c4CmlErxrqWYsl9qwadE4tJ9Oz2k2gh1wUDPrXZysKVxZ-H8273LTYjOLy7dvogWWoDXw83EI"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-xl transition-colors text-slate-400">
+<span class="material-symbols-outlined text-[24px]">chat</span>
+</button>
+<button class="relative rounded-full transition-all p-1">
+<span class="material-symbols-outlined text-[28px] text-slate-400">account_circle</span>
+<span class="absolute w-2 h-2 bg-red-500 border border-white rounded-full top-2 right-2"></span>
+</button>
+</div>
+</header>
+<main class="pt-6 pb-32 px-5 space-y-8">
+<!-- Section Header -->
+<div class="mb-4">
+<h1 class="text-[32px] tt-fors-bold tight-display text-primary leading-tight">Active components</h1>
+</div>
+<!-- Energy Flow Diagram Container -->
+<div class="relative w-full bg-white rounded-4xl shadow-sm p-8 border border-slate-100 overflow-hidden min-h-[420px] flex items-center justify-center">
+<!-- Real-time Stat Overlay -->
+<div class="absolute left-0 right-0 text-center top-8">
+<div class="tt-fors-bold text-primary tight-display leading-none text-[56px]">4.2 kW</div>
+</div>
+<div class="flex flex-col items-center gap-12 relative z-10 w-full mt-24">
+<!-- Production Top Row -->
+<div class="flex items-center gap-2 mb-4">
+<span class="flex h-2 w-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-[0.2em]">Live flow</span>
+</div><div class="energy-node w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-50">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-secondary text-2xl">light_mode</span>
+<span class="text-[9px] tt-fors-bold text-primary uppercase tracking-widest mt-1">Solar</span>
+</div>
+</div>
+<!-- Central Hub Row -->
+<div class="grid grid-cols-3 gap-8 w-full items-center">
+<!-- Left: Grid -->
+<div class="flex items-center gap-2 mb-4">
+<span class="flex h-2 w-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-[0.2em]">Live flow</span>
+</div><div class="energy-node w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-50 mx-auto">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-2xl">electric_bolt</span>
+<span class="text-[9px] tt-fors-bold text-primary uppercase tracking-widest mt-1">Grid</span>
+</div>
+</div>
+<!-- Center: Hub -->
+<div class="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center border-4 border-white shadow-lg mx-auto">
+<span class="material-symbols-outlined text-primary text-4xl fill-1">hub</span>
+</div>
+<!-- Right: Battery -->
+<div class="flex items-center gap-2 mb-4">
+<span class="flex h-2 w-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-[0.2em]">Live flow</span>
+</div><div class="energy-node w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-50 mx-auto">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-2xl">battery_charging_80</span>
+<span class="text-[9px] tt-fors-bold text-primary uppercase tracking-widest mt-1">87%</span>
+</div>
+</div>
+</div>
+<!-- Consumption Bottom Row -->
+<div class="flex items-center gap-2 mb-4">
+<span class="flex h-2 w-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-[0.2em]">Live flow</span>
+</div><div class="energy-node w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-50">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-2xl">home</span>
+<span class="text-[9px] tt-fors-bold text-primary uppercase tracking-widest mt-1">Home</span>
+</div>
+</div>
+<!-- SVG Flow Lines -->
+<svg class="absolute inset-0 w-full h-full -z-10" preserveaspectratio="none">
+<line stroke="#0F6CBD" stroke-dasharray="6 4" stroke-opacity="0.2" stroke-width="2" x1="50%" x2="50%" y1="20%" y2="50%"></line>
+<line stroke="#0F6CBD" stroke-dasharray="6 4" stroke-opacity="0.2" stroke-width="2" x1="50%" x2="50%" y1="50%" y2="80%"></line>
+<line stroke="#0F6CBD" stroke-dasharray="6 4" stroke-opacity="0.2" stroke-width="2" x1="28%" x2="50%" y1="50%" y2="50%"></line>
+<line stroke="#0F6CBD" stroke-dasharray="6 4" stroke-opacity="0.2" stroke-width="2" x1="72%" x2="50%" y1="50%" y2="50%"></line>
+<circle cx="50%" cy="32%" fill="#0F6CBD" r="3"></circle>
+<circle cx="36%" cy="50%" fill="#0F6CBD" r="3"></circle>
+<circle cx="64%" cy="50%" fill="#F4C94C" r="3"></circle>
+<circle cx="50%" cy="68%" fill="#0F6CBD" r="3"></circle>
+</svg>
+</div>
+</div>
+<!-- Hardware Ecosystem List -->
+<section class="space-y-2">
+<h2 class="text-[12px] tt-fors-bold uppercase tracking-widest text-primary px-1 mb-3">Hardware ecosystem</h2>
+<!-- Card 1 -->
+<div class="bg-white rounded-3xl p-5 flex items-center justify-between shadow-sm border border-slate-100">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">settings_input_component</span>
+</div>
+<div>
+<p class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-wider">Inverter</p>
+<h4 class="text-[18px] tt-fors-bold text-on-surface">AX-5000 Series</h4>
+</div>
+</div>
+<div class="px-4 py-1.5 rounded-full bg-blue-50 text-primary text-[11px] tt-fors-bold uppercase tracking-wider">Optimal</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white rounded-3xl p-5 flex items-center justify-between shadow-sm border border-slate-100">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">battery_full</span>
+</div>
+<div>
+<p class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-wider">Inverter</p>
+<h4 class="text-[18px] tt-fors-bold text-on-surface">Li-ion array</h4>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[20px] tt-fors-bold text-on-surface">82%</span>
+<span class="text-[10px] tt-fors-bold text-secondary uppercase tracking-widest">Charging</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white rounded-3xl p-5 flex items-center justify-between shadow-sm border border-slate-100">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">verified_user</span>
+</div>
+<div>
+<p class="text-[11px] tt-fors-bold text-primary opacity-60 uppercase tracking-wider">Storage</p>
+<h4 class="text-[18px] tt-fors-bold text-on-surface">V2 protection</h4>
+</div>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[20px] fill-1">lock</span>
+<span class="text-[11px] tt-fors-bold uppercase tracking-widest">Secured</span>
+</div>
+</div>
+</section>
+<!-- High-density Insight Card (System Efficiency) -->
+<section class="rounded-4xl p-8 text-white shadow-xl shadow-blue-900/10 bg-primary relative overflow-hidden">
+<div class="flex justify-between items-start mb-6">
+<p class="text-[12px] tt-fors-bold tracking-widest opacity-80">System efficiency</p>
+<span class="material-symbols-outlined text-secondary text-4xl fill-1">bolt</span>
+</div>
+<h3 class="text-7xl tt-fors-bold tight-display mb-4 leading-none">98.4%</h3>
+<p class="text-[14px] leading-relaxed tt-fors-bold opacity-90">Operating within extreme efficiency parameters. No detected anomalies in the last 24h cycle.</p>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center pt-4 pb-10 px-4 bg-white/95 backdrop-blur-xl rounded-t-[2.5rem] border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]"><a class="flex flex-col items-center justify-center text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[28px] fill-1">home</span>
+<span class="text-[11px] tt-fors-bold mt-1 tracking-tight">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[28px]">assignment</span>
+<span class="text-[11px] tt-fors-bold mt-1 tracking-tight">Assessment</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+<span class="text-[11px] tt-fors-bold mt-1 tracking-tight">Financing</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[28px]">storefront</span>
+<span class="text-[11px] tt-fors-bold mt-1 tracking-tight">Marketplace</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary tap-highlight-none active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[28px]">more_horiz</span>
+<span class="text-[11px] tt-fors-bold mt-1 tracking-tight">More</span>
+</a></nav>
+</body></html>

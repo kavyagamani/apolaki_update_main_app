@@ -1,0 +1,430 @@
+/* =========================================
+   APOLAKI: SOLAR PUNK VIVID THEME
+   Concept: High Energy, Split-Screen, Glass
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+:root {
+    /* --- VIBRANT PALETTE --- */
+    /* Primary Action Gradient (Blue/Cyan) */
+    --grad-action: linear-gradient(135deg, #2563EB 0%, #0891B2 100%);
+    
+    /* Illustration Background Gradient (Solar/Warm) */
+    --grad-visual: linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);
+    
+    /* Accents */
+    --color-primary: #2563EB;
+    --color-dark: #0F172A;
+    --color-text: #334155;
+    --color-muted: #94A3B8;
+    
+    /* Surfaces */
+    --bg-app: #F8FAFC;
+    --glass-panel: rgba(255, 255, 255, 0.95);
+    
+    /* Spacing & Depth */
+    --radius-xl: 24px;
+    --radius-md: 12px;
+    --shadow-floating: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* =========================================
+   GLOBAL RESET & LAYOUT
+   ========================================= */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg-app);
+    color: var(--color-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* Dynamic Background blobs */
+body::before {
+    content: '';
+    position: fixed;
+    top: -20%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(37,99,235,0.1) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+}
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -20%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+.app-header {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--grad-action);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-pills {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-pill {
+    text-decoration: none;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.nav-pill:hover { background: #F1F5F9; color: var(--color-primary); }
+.nav-pill.active { background: var(--color-primary); color: white; }
+
+/* =========================================
+   MAIN CARD CONTAINER
+   ========================================= */
+.main-stage {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center Vertically */
+    padding: 2rem;
+}
+
+.app-card {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--glass-panel);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-floating);
+    overflow: hidden; /* Clips the split layout */
+    display: flex;
+    flex-direction: column;
+    min-height: 650px;
+    border: 1px solid rgba(255,255,255,0.6);
+}
+
+.progress-track {
+    height: 6px;
+    background: #E2E8F0;
+    width: 100%;
+}
+.progress-bar {
+    height: 100%;
+    background: var(--grad-action);
+    width: 20%;
+    transition: width 0.5s ease;
+}
+
+/* =========================================
+   SPLIT LAYOUT (The Core Change)
+   ========================================= */
+.wizard-step {
+    display: none;
+    flex: 1; /* Fills height */
+}
+.wizard-step.active { display: flex; }
+
+/* Left Side: Form */
+.form-panel {
+    flex: 1.2; /* 60% width */
+    padding: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Right Side: Illustration */
+.illustration-panel {
+    flex: 0.8; /* 40% width */
+    background: #F1F5F9;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* The Vibrant Placeholder Box */
+.art-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--grad-visual);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    position: relative;
+}
+
+/* Decorative circles in placeholder */
+.art-placeholder::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    top: -50px;
+    right: -50px;
+}
+
+.art-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.9; }
+.art-label { font-size: 1.2rem; font-weight: 800; opacity: 0.9; }
+.art-sub { font-size: 0.9rem; opacity: 0.7; margin-top: 5px; }
+
+/* =========================================
+   FORMS & TYPOGRAPHY
+   ========================================= */
+h1 {
+    font-size: 2.2rem;
+    margin: 0 0 1rem 0;
+    color: var(--color-dark);
+    line-height: 1.1;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.input-wrapper { margin-bottom: 1.5rem; }
+label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-dark);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fancy-input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #E2E8F0;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: 0.3s;
+    background: #FFF;
+}
+.fancy-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    outline: none;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+.action-row {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2rem;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--grad-action);
+    color: white;
+    box-shadow: 0 10px 15px -3px rgba(37,99,235,0.3);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 20px -3px rgba(37,99,235,0.4);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--color-muted);
+}
+.btn-ghost:hover { color: var(--color-dark); }
+
+/* =========================================
+   RESULTS GRID (Step 5)
+   ========================================= */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.result-card {
+    background: #FFF;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid #E2E8F0;
+    text-align: center;
+}
+.result-val { font-size: 1.5rem; font-weight: 800; color: var(--color-primary); margin: 5px 0; }
+.result-lbl { font-size: 0.8rem; text-transform: uppercase; color: var(--color-muted); }
+
+/* Console Style */
+.console-ui {
+    background: #1E293B;
+    color: #4ADE80;
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    font-family: monospace;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Address Input Styles */
+#input-address {
+    background: #f9fafb;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 1.5rem;
+}
+.address-label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: #334155;
+}
+.address-input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    background: #fff;
+    transition: border 0.2s;
+}
+.address-input:focus {
+    border: 1.5px solid #38bdf8;
+    outline: none;
+}
+.address-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: #38bdf8;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.address-btn:hover {
+    background: #0ea5e9;
+}
+.address-sample-tip {
+    margin-top: 1rem;
+    color: #64748b;
+    font-size: 0.95em;
+    text-align: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+    .wizard-step { flex-direction: column-reverse; }
+    .illustration-panel { min-height: 200px; flex: none; }
+    .form-panel { padding: 2rem; }
+}
+
+/* --- LIFESTYLE SIMULATOR STYLES --- */
+.appliance-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #F1F5F9;
+}
+.app-icon {
+    width: 45px; height: 45px;
+    background: #E0F2FE;
+    color: var(--color-primary);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+}
+.app-desc {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+}
+.app-load {
+    margin-left: auto;
+    font-weight: 700;
+    color: var(--color-dark);
+}
+
+.recommendation-box {
+    margin-top: 1.5rem;
+    background: #FFFBEB;
+    border: 1px solid #FCD34D;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: left;
+}

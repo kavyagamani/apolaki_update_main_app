@@ -1,0 +1,159 @@
+# Apolaki Platform - Production Values
+# IMPORTANT: Update all passwords and secrets before deploying to production!
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/apolaki/apolaki
+  tag: v1.0.0  # Use specific version tags in production
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+service:
+  type: LoadBalancer
+  port: 443
+  targetPort: 3000
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://apolaki-solar.com"
+  hosts:
+    - host: apolaki-solar.com
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: www.apolaki-solar.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: prod-tls
+      hosts:
+        - apolaki-solar.com
+        - www.apolaki-solar.com
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: API_URL
+    value: "https://api.apolaki-solar.com"
+  - name: LOG_LEVEL
+    value: "warn"
+  - name: ENABLE_MONITORING
+    value: "true"
+  - name: ENABLE_ANALYTICS
+    value: "true"
+  - name: SENTRY_DSN
+    valueFrom:
+      secretKeyRef:
+        name: apolaki-secrets
+        key: sentry-dsn
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+    scheme: HTTP
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 5
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 3000
+    scheme: HTTP
+  initialDelaySeconds: 20
+  periodSeconds: 5
+  failureThreshold: 2
+  timeoutSeconds: 3
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["/bin/sh", "-c", "sleep 15"]
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - apolaki-frontend
+          topologyKey: kubernetes.io/hostname
+
+postgresql:
+  enabled: true
+  auth:
+    username: apolaki_prod
+    password: CHANGE_ME_STRONG_PASSWORD
+    postgresPassword: CHANGE_ME_POSTGRES_PASSWORD
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+      storageClassName: "gp3"
+    resources:
+      limits:
+        memory: 4Gi
+      requests:
+        memory: 2Gi
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: CHANGE_ME_REDIS_PASSWORD
+  replica:
+    replicaCount: 2
+  persistence:
+    enabled: true
+    size: 20Gi
+
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # 2 AM daily
+  retention: 30  # days
+
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+
+logging:
+  enabled: true
+  elk:
+    enabled: true
+  fluentbit:
+    enabled: true

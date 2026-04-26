@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apolaki | Intelligent Solar Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Special Home Page Styles */
+        .hero-section {
+            text-align: center;
+            padding: 4rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--grad-action);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+        .hero-sub {
+            font-size: 1.25rem;
+            color: var(--color-text);
+            margin-bottom: 3rem;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .module-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid #E2E8F0;
+            transition: 0.3s;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
+            border-color: var(--color-primary);
+        }
+        .mod-icon {
+            width: 60px; height: 60px;
+            background: #F1F5F9;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+        }
+        .mod-num {
+            position: absolute; top: 20px; right: 20px;
+            font-size: 3rem; font-weight: 800; color: #F1F5F9;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="index.html" class="brand">
+                <i class="fa-solid fa-sun fa-spin-pulse" style="--fa-animation-duration: 3s;"></i> APOLAKI
+            </a>
+            <nav class="nav-pills">
+                <a href="index.html" class="nav-pill active"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="assessment.html" class="nav-pill">1. Assessment</a>
+                <a href="marketplace.html" class="nav-pill">2. Marketplace</a>
+                <a href="finance.html" class="nav-pill">3. Finance</a>
+                <a href="contracts.html" class="nav-pill">4. Contracts</a>
+                <a href="monitor.html" class="nav-pill">5. Monitor</a>
+                <a href="credits.html" class="nav-pill">6. Credits</a>
+                <a href="about.html" class="nav-pill">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main style="flex:1;">
+        
+        <section class="hero-section">
+            <h1 class="hero-title">Powering the Future <br>of Filipino Homes.</h1>
+            <p class="hero-sub">The all-in-one platform to assess, finance, install, and monetize your solar energy journey.</p>
+            
+            <a href="assessment.html" class="btn btn-primary" style="font-size:1.2rem; padding: 18px 40px;">
+                Start Your Assessment <i class="fa-solid fa-arrow-right" style="margin-left:10px;"></i>
+            </a>
+        </section>
+
+        <section class="module-grid">
+            
+            <div class="module-card" onclick="location.href='assessment.html'">
+                <div class="mod-num">01</div>
+                <div class="mod-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h3>Smart Assessment</h3>
+                <p style="color:#64748B;">AI-powered analysis of your roof potential using NASA & Google Earth data.</p>
+            </div>
+
+            <div class="module-card" onclick="location.href='marketplace.html'">
+                <div class="mod-num">02</div>
+                <div class="mod-icon"><i class="fa-solid fa-store"></i></div>
+                <h3>Trusted Marketplace</h3>
+                <p style="color:#64748B;">Connect with verified installers, suppliers, and architects in your area.</p>
+            </div>
+
+            <div class="module-card" onclick="location.href='finance.html'">
+                <div class="mod-num">03</div>
+                <div class="mod-icon"><i class="fa-solid fa-coins"></i></div>
+                <h3>Finance & ROI</h3>
+                <p style="color:#64748B;">Transparent costing, payback calculators, and Green Loan integration.</p>
+            </div>
+
+            <div class="module-card" onclick="location.href='contracts.html'">
+                <div class="mod-num">04</div>
+                <div class="mod-icon"><i class="fa-solid fa-file-contract"></i></div>
+                <h3>Digital Contracts</h3>
+                <p style="color:#64748B;">E-Signatures and automated permit tracking to streamline compliance.</p>
+            </div>
+
+            <div class="module-card" onclick="location.href='monitor.html'">
+                <div class="mod-num">05</div>
+                <div class="mod-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>Live Monitoring</h3>
+                <p style="color:#64748B;">Track generation, savings, and book maintenance with "Solar Moms".</p>
+            </div>
+
+            <div class="module-card" onclick="location.href='credits.html'">
+                <div class="mod-num">06</div>
+                <div class="mod-icon"><i class="fa-solid fa-leaf"></i></div>
+                <h3>Carbon Exchange</h3>
+                <p style="color:#64748B;">Mint carbon credits from your clean energy and sell them on the open market.</p>
+            </div>
+
+        </section>
+
+
+
+    </main>
+        <section class="privacy-section">
+        <div class="privacy-container">
+            <h2 style="color:black; border-right:1px solid rgba(255,255,255,0.2); padding-bottom:1rem;">Data Privacy Notice</h2>
+            <div class="privacy-card">
+                <div class="privacy-title">1. Data Collection</div>
+                <p style="font-size:0.9rem; opacity:0.8; margin-bottom:1.5rem;">We collect location data and energy bills strictly for system sizing.</p>
+                <div class="privacy-title">2. Usage Policy</div>
+                <p style="font-size:0.9rem; opacity:0.8; margin-bottom:1.5rem;">Data is shared with installers only upon your request (contract phase).</p>
+                <div class="privacy-title">3. Compliance</div>
+                <p style="font-size:0.9rem; opacity:0.8;">Compliant with RA 10173 (Data Privacy Act of 2012).</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer style="text-align:center; padding:2rem; background:white; border-top:1px solid #E2E8F0; color:#94A3B8;">
+        &copy; 2025 Apolaki Energy. Built for a Greener Philippines.
+    </footer>
+
+</body>
+</html>

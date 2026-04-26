@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apolaki | About Us</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .about-hero { text-align: center; padding: 4rem 1rem; max-width: 800px; margin: 0 auto; }
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto 4rem auto; padding: 0 1rem; }
+        .founder-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; transition: 0.3s; text-align: center; }
+        .founder-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .founder-img-box { height: 200px; background: #F1F5F9; display: flex; align-items: center; justify-content: center; color: #94A3B8; }
+        .founder-info { padding: 1.5rem; }
+        .founder-name { font-weight: 800; font-size: 1.1rem; color: var(--color-dark); margin-bottom: 5px; }
+        .founder-role { color: var(--color-primary); font-size: 0.9rem; margin-bottom: 1rem; font-weight: 600; }
+        .linkedin-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: #0077B5; color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.2s; }
+        .linkedin-btn:hover { background: #005582; }
+        .privacy-section { background: #0F172A; color: #E2E8F0; padding: 4rem 1rem; margin-top: auto; }
+        .privacy-container { max-width: 900px; margin: 0 auto; }
+        .privacy-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 2rem; border-radius: 12px; margin-top: 2rem; }
+        .privacy-title { color: #38BDF8; font-weight: 700; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="index.html" class="brand">
+                <i class="fa-solid fa-sun"></i> APOLAKI
+            </a>
+            <nav class="nav-pills">
+                <a href="index.html" class="nav-pill"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="assessment.html" class="nav-pill">1. Assessment</a>
+                <a href="marketplace.html" class="nav-pill">2. Marketplace</a>
+                <a href="finance.html" class="nav-pill">3. Finance</a>
+                <a href="contracts.html" class="nav-pill">4. Contracts</a>
+                <a href="monitor.html" class="nav-pill">5. Monitor</a>
+                <a href="credits.html" class="nav-pill">6. Credits</a>
+                <a href="about.html" class="nav-pill active">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="about-hero">
+        <h1 style="font-size:3rem; margin-bottom:1rem;">Democratizing Solar Energy.</h1>
+        <p class="subtitle">Apolaki was built to bridge the gap between Filipino homeowners and clean, affordable energy. We simplify the journey from assessment to installation.</p>
+    </div>
+
+    <h2 style="text-align:center; margin-bottom:2rem;">The Leadership Team</h2>
+    <div class="team-grid">
+        <div class="founder-card">
+            <div class="founder-img-box"><i class="fa-solid fa-user fa-4x"></i></div>
+            <div class="founder-info">
+                <div class="founder-name">Alberto Jr. D. Villanueva</div>
+                <div class="founder-role">Co-Founder & CEO </div>
+                <a href="#" class="linkedin-btn"><i class="fa-brands fa-linkedin"></i> Connect</a>
+            </div>
+        </div>
+        <div class="founder-card">
+            <div class="founder-img-box"><i class="fa-solid fa-user fa-4x"></i></div>
+            <div class="founder-info">
+                <div class="founder-name">Arman Paul R. Santos</div>
+                <div class="founder-role">Co-Founder & CFO </div>
+                <a href="#" class="linkedin-btn"><i class="fa-brands fa-linkedin"></i> Connect</a>
+            </div>
+        </div>
+        <div class="founder-card">
+            <div class="founder-img-box"><i class="fa-solid fa-user fa-4x"></i></div>
+            <div class="founder-info">
+                <div class="founder-name">Josa C. Elegado</div>
+                <div class="founder-role">Co-Founder & CMO </div>
+                <a href="#" class="linkedin-btn"><i class="fa-brands fa-linkedin"></i> Connect</a>
+            </div>
+        </div>
+        <div class="founder-card">
+            <div class="founder-img-box"><i class="fa-solid fa-user fa-4x"></i></div>
+            <div class="founder-info">
+                <div class="founder-name">Sreenivas Sadhu Prabhakara</div>
+                <div class="founder-role">Co-Founder & CPO</div>
+                <a href="#" class="linkedin-btn"><i class="fa-brands fa-linkedin"></i> Connect</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
